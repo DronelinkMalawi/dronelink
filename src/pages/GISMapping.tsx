@@ -190,10 +190,12 @@ const GISMapping = () => {
                 ))}
               </div>
 
-              <Button variant="tech" size="lg" className="group">
-                Discuss Your Project
-                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
+              <Link to="/discuss-project">
+                <Button variant="tech" size="lg" className="group">
+                  Discuss Your Project
+                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
             </div>
 
             {/* Deliverables */}
@@ -303,10 +305,12 @@ const GISMapping = () => {
                   Get professional GIS mapping and spatial analysis services backed by our
                   expert team and cutting-edge technology.
                 </p>
-                <Button variant="accent" size="lg" className="group">
-                  Get Free Consultation
-                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </Button>
+                <Link to="/free-consultation">
+                  <Button variant="accent" size="lg" className="group">
+                    Get Free Consultation
+                    <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           </div>

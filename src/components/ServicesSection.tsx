@@ -108,18 +108,30 @@ const ServicesSection = () => {
 
         {/* Bottom CTA */}
         <div className="text-center">
-          <div className="bg-hero-gradient rounded-3xl p-8 md:p-12 text-white animate-fade-in">
-            <h3 className="text-2xl md:text-3xl font-bold mb-4">
-              Ready to Elevate Your Project?
-            </h3>
-            <p className="text-white/90 mb-8 max-w-2xl mx-auto">
-              Get a custom quote for your specific drone technology needs. Our experts are ready to help you 
-              achieve your goals with cutting-edge aerial solutions.
-            </p>
-            <Button variant="accent" size="lg" className="group">
-              Request Consultation
-              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
+          <div className="bg-hero-gradient rounded-3xl p-8 md:p-12 text-white animate-fade-in relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative z-10">
+              <h3 className="text-2xl md:text-3xl font-bold mb-4">
+                Ready to Elevate Your Project?
+              </h3>
+              <p className="text-white/90 mb-8 max-w-2xl mx-auto">
+                Get a custom quote for your specific drone technology needs. Our experts are ready to help you 
+                achieve your goals with cutting-edge aerial solutions.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link to="/consultation">
+                  <Button variant="accent" size="lg" className="group bg-white text-accent hover:bg-white/90 shadow-lg hover:shadow-xl transition-all duration-300">
+                    Request Consultation
+                    <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
+                <Link to="/get-quote">
+                  <Button variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10 hover:border-white/50 transition-all duration-300">
+                    Quick Quote
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </div>

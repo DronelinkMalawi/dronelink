@@ -1,13 +1,29 @@
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Linkedin, Mail, Twitter, X } from 'lucide-react';
+import { Link, Linkedin, Mail, Twitter, X } from 'lucide-react';
 import teamCEO from '@/assets/team-ceo.jpg';
 import teamCTO from '@/assets/team-cto.jpg';
 import teamPilot from '@/assets/team-pilot.jpg';
 import teamGIS from '@/assets/team-gis.jpg';
 import teamDev from '@/assets/team-dev.jpg';
 import teamMarketing from '@/assets/team-marketing.jpg';
+import teamMember7 from '@/assets/1team-ceo.jpg';
+import teamMember8 from '@/assets/1team-cto.jpg';
+import teamMember9 from '@/assets/1team-pilot.jpg';
+
+interface TeamMember {
+  name: string;
+  role: string;
+  image: string;
+  bio: string;
+  expertise: string[];
+  social: {
+    linkedin: string;
+    email: string;
+    twitter: string;
+  };
+}
 
 const TeamsSection = () => {
   const [selectedMember, setSelectedMember] = useState(null);
@@ -86,6 +102,7 @@ const TeamsSection = () => {
         twitter: '#'
       }
     },
+  
   ];
 
   const handleMemberClick = (member) => {
@@ -136,7 +153,7 @@ const TeamsSection = () => {
                   <img
                     src={member.image}
                     alt={`${member.name} - ${member.role}`}
-                    className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+                    className="w-full h-auto max-h-64 object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   
@@ -297,12 +314,16 @@ const TeamsSection = () => {
                 and excellence in drone technology. Explore career opportunities with DronelinkMW.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button variant="accent" size="lg">
-                  View Open Positions
-                </Button>
-                <Button variant="outline" size="lg" className="border-white/20 text-white hover:bg-white/20 backdrop-blur-sm">
-                  Submit Resume
-                </Button>
+                <Link to="/open-positions">
+                  <Button variant="accent" size="lg">
+                    View Open Positions
+                  </Button>
+                </Link>
+                <Link to="/submit-resume">
+                  <Button variant="outline" size="lg" className="border-white/20 text-white hover:bg-white/20 backdrop-blur-sm">
+                    Submit Resume
+                  </Button>
+                </Link>
               </div>
             </CardContent>
           </Card>

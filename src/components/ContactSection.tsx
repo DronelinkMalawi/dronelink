@@ -14,14 +14,14 @@ const ContactSection = () => {
     project: '',
     message: ''
   });
-  
+
   const { toast } = useToast();
 
   const contactInfo = [
     {
       icon: MapPin,
       title: 'Location',
-      details: ['Lilonge', 'Bingu National Stadium Corporate Box E14'],
+      details: ['Lilonge', 'Bingu National Stadium Corporate Box E26'],
       color: 'text-blue-500'
     },
     {
@@ -44,10 +44,9 @@ const ContactSection = () => {
     }
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleMailto = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Basic validation
+
     if (!formData.name || !formData.email || !formData.message) {
       toast({
         title: "Required fields missing",
@@ -57,20 +56,11 @@ const ContactSection = () => {
       return;
     }
 
-    // Simulate form submission
-    toast({
-      title: "Message sent successfully!",
-      description: "We'll get back to you within 24 hours.",
-    });
-
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      project: '',
-      message: ''
-    });
+    const subject = encodeURIComponent("Drone Project Inquiry");
+    const body = encodeURIComponent(
+      `Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\nProject: ${formData.project}\nMessage: ${formData.message}`
+    );
+    window.location.href = `mailto:info@dronelinkmw.com?subject=${subject}&body=${body}`;
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -126,20 +116,6 @@ const ContactSection = () => {
                 </CardContent>
               </Card>
             ))}
-
-            {/* Quick Info */}
-            <Card className="bg-hero-gradient text-white animate-fade-in">
-              <CardContent className="p-6">
-                <h3 className="font-bold text-xl mb-4">24/7 Emergency Response</h3>
-                <p className="text-white/90 mb-4">
-                  Need urgent drone services? Our emergency response team is available around the clock 
-                  for critical projects and time-sensitive operations.
-                </p>
-                <Button variant="accent" size="sm">
-                  Emergency Contact
-                </Button>
-              </CardContent>
-            </Card>
           </div>
 
           {/* Contact Form */}
@@ -148,7 +124,7 @@ const ContactSection = () => {
               <CardContent className="p-8">
                 <h3 className="text-2xl font-bold text-foreground mb-6">Send Us a Message</h3>
                 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleMailto} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
@@ -161,7 +137,7 @@ const ContactSection = () => {
                         onChange={handleChange}
                         placeholder="Your full name"
                         required
-                        className="border-border/50 focus:border-accent"
+                        className="border-border/50 focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all duration-300"
                       />
                     </div>
                     
@@ -177,7 +153,7 @@ const ContactSection = () => {
                         onChange={handleChange}
                         placeholder="your.email@example.com"
                         required
-                        className="border-border/50 focus:border-accent"
+                        className="border-border/50 focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all duration-300"
                       />
                     </div>
                   </div>
@@ -225,13 +201,15 @@ const ContactSection = () => {
                       placeholder="Tell us about your project requirements, timeline, and any specific needs..."
                       rows={6}
                       required
-                      className="border-border/50 focus:border-accent resize-none"
+                      className="border-border/50 focus:border-accent focus:ring-2 focus:ring-accent/20 resize-none transition-all duration-300"
                     />
                   </div>
 
-                  <Button type="submit" variant="hero" size="lg" className="w-full group">
-                    Send Message
-                    <Send className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  <Button type="submit" variant="hero" size="lg" className="w-full group interactive">
+                    <span className="flex items-center justify-center">
+                      Send Message
+                      <Send className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </span>
                   </Button>
                 </form>
               </CardContent>

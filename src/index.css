@@ -2,237 +2,101 @@
 @tailwind components;
 @tailwind utilities;
 
-/* DronelinkMW Design System - Advanced drone technology aesthetic */
+/* Force modern dark theme */
+html, body {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%) !important;
+  color: #f1f5f9 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 100vh !important;
+  font-family: 'Inter', system-ui, sans-serif !important;
+}
 
+#root {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%) !important;
+  min-height: 100vh !important;
+}
+ 
 @layer base {
   :root {
-    /* Core brand colors - Deep tech blues and aerospace teals */
-    --background: 0 0% 100%;
-    --foreground: 215 25% 15%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 215 25% 15%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 15%;
-
-    /* Primary - Deep aerospace blue */
-    --primary: 215 85% 25%;
-    --primary-foreground: 0 0% 98%;
-    --primary-glow: 215 85% 45%;
-
-    /* Secondary - Tech teal */
-    --secondary: 180 75% 25%;
-    --secondary-foreground: 0 0% 98%;
-
-    /* Muted - Sophisticated grays */
-    --muted: 215 20% 96%;
-    --muted-foreground: 215 15% 45%;
-
-    /* Accent - Energy teal */
-    --accent: 175 85% 35%;
-    --accent-foreground: 0 0% 98%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 215 20% 90%;
-    --input: 215 20% 95%;
-    --ring: 215 85% 25%;
-
-    --radius: 0.75rem;
-
-    /* Custom design tokens */
-    --hero-gradient: linear-gradient(135deg, hsl(215 85% 25%), hsl(180 75% 25%), hsl(175 85% 35%));
-    --card-gradient: linear-gradient(145deg, hsl(0 0% 100%), hsl(215 20% 98%));
-    --tech-gradient: linear-gradient(90deg, hsl(215 85% 25%), hsl(175 85% 35%));
-    --glow-gradient: linear-gradient(135deg, hsl(215 85% 45% / 0.2), hsl(175 85% 45% / 0.2));
-    
-    /* Shadows with brand colors */
-    --shadow-primary: 0 10px 40px -10px hsl(215 85% 25% / 0.25);
-    --shadow-glow: 0 0 60px hsl(175 85% 45% / 0.3);
-    --shadow-card: 0 4px 20px -4px hsl(215 25% 15% / 0.1);
-    
-    /* Animation variables */
-    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  .dark {
-    /* Dark mode - Deep space tech aesthetic */
-    --background: 215 30% 8%;
-    --foreground: 0 0% 95%;
-
-    --card: 215 25% 12%;
-    --card-foreground: 0 0% 95%;
-
-    --popover: 215 25% 12%;
-    --popover-foreground: 0 0% 95%;
-
-    --primary: 175 85% 45%;
-    --primary-foreground: 215 30% 8%;
-    --primary-glow: 175 85% 55%;
-
-    --secondary: 215 25% 20%;
-    --secondary-foreground: 0 0% 95%;
-
-    --muted: 215 25% 15%;
-    --muted-foreground: 215 15% 65%;
-
-    --accent: 180 75% 50%;
-    --accent-foreground: 215 30% 8%;
-
-    --destructive: 0 75% 55%;
-    --destructive-foreground: 0 0% 95%;
-
-    --border: 215 25% 20%;
-    --input: 215 25% 18%;
-    --ring: 175 85% 45%;
-
-    /* Dark mode gradients */
-    --hero-gradient: linear-gradient(135deg, hsl(215 30% 8%), hsl(215 25% 15%), hsl(175 85% 25%));
-    --card-gradient: linear-gradient(145deg, hsl(215 25% 12%), hsl(215 25% 18%));
-    --tech-gradient: linear-gradient(90deg, hsl(175 85% 45%), hsl(180 75% 40%));
-    --glow-gradient: linear-gradient(135deg, hsl(175 85% 45% / 0.3), hsl(180 75% 45% / 0.3));
-    
-    --shadow-primary: 0 10px 40px -10px hsl(175 85% 45% / 0.4);
-    --shadow-glow: 0 0 80px hsl(175 85% 45% / 0.5);
-    --shadow-card: 0 4px 30px -4px hsl(0 0% 0% / 0.3);
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary-glow: 217.2 91.2% 59.8%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-primary: 224.3 76.3% 94.1%;
+    --sidebar-primary-foreground: 240 5.9% 10%;
     --sidebar-accent: 240 3.7% 15.9%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    --radius: 0.5rem;
+  }
+ 
+  .light {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --primary-glow: 222.2 47.4% 11.2%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground font-sans antialiased;
-  }
-
-  html {
-    scroll-behavior: smooth;
-  }
-}
-
+ 
 @layer components {
-  /* Hero section styles */
-  .hero-gradient {
-    background: var(--hero-gradient);
+  body {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%) !important;
+    color: #f1f5f9 !important;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', system-ui, sans-serif;
   }
   
-  .tech-gradient {
-    background: var(--tech-gradient);
+  * {
+    box-sizing: border-box;
   }
   
-  .glow-effect {
-    box-shadow: var(--shadow-glow);
-  }
-  
-  /* Animation utilities */
-  .animate-fade-in-up {
-    animation: fadeInUp 0.8s ease-out forwards;
-  }
-  
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
-  }
-  
-  .animate-pulse-glow {
-    animation: pulseGlow 2s ease-in-out infinite;
-  }
-  
-  /* Card hover effects */
-  .card-hover {
-    transition: var(--transition-smooth);
-    cursor: pointer;
-  }
-  
-  .card-hover:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: var(--shadow-primary);
-  }
-  
-  /* Button animations */
-  .btn-primary {
-    background: var(--tech-gradient);
-    transition: var(--transition-smooth);
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .btn-primary::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, hsl(0 0% 100% / 0.2), transparent);
-    transition: left 0.5s;
-  }
-  
-  .btn-primary:hover::before {
-    left: 100%;
-  }
-  
-  .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-glow);
-  }
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-}
-
-@keyframes pulseGlow {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.05);
+  html, body {
+    overflow-x: hidden;
   }
 }

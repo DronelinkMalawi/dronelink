@@ -103,14 +103,18 @@ const LandHealthMonitoring = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button variant="hero" size="lg" className="group">
-                Start Monitoring
-                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
-              <Button variant="outline" size="lg" className="bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm">
-                <Eye className="mr-2 w-5 h-5" />
-                View Reports
-              </Button>
+              <Link to="/start-monitoring">
+                <Button variant="hero" size="lg" className="group">
+                  Start Monitoring
+                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+              <Link to="/view-reports">
+                <Button variant="outline" size="lg" className="bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm">
+                  <Eye className="mr-2 w-5 h-5" />
+                  View Reports
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -182,10 +186,12 @@ const LandHealthMonitoring = () => {
                 ))}
               </div>
 
-              <Button variant="tech" size="lg" className="group">
-                View Case Studies
-                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
+              <Link to="/case-studies">
+                <Button variant="tech" size="lg" className="group">
+                  View Case Studies
+                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
             </div>
 
             {/* Key Indicators */}
@@ -290,13 +296,17 @@ const LandHealthMonitoring = () => {
                   who trust our environmental monitoring expertise for their critical projects.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button variant="accent" size="lg" className="group">
-                    Start Project
-                    <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                  <Button variant="outline" size="lg" className="border-white/20 text-white hover:bg-white/20 backdrop-blur-sm">
-                    Research Collaboration
-                  </Button>
+                  <Link to="/start-project">
+                    <Button variant="accent" size="lg" className="group">
+                      Start Project
+                      <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
+                  <Link to="/research-collaboration">
+                    <Button variant="outline" size="lg" className="border-white/20 text-white hover:bg-white/20 backdrop-blur-sm">
+                      Research Collaboration
+                    </Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>

@@ -44,10 +44,7 @@ const PrecisionAgriculture = () => {
       name: 'Maize',
       description: 'Comprehensive monitoring for Malawi\'s primary staple crop'
     },
-    {
-      name: 'Tobacco',
-      description: 'Quality assessment and yield optimization for export crops'
-    },
+ 
     {
       name: 'Tea',
       description: 'Plantation health monitoring and harvest timing optimization'
@@ -111,14 +108,18 @@ const PrecisionAgriculture = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button variant="hero" size="lg" className="group">
-                Start Monitoring
-                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
-              <Button variant="outline" size="lg" className="bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm">
-                <TrendingUp className="mr-2 w-5 h-5" />
-                View Results
-              </Button>
+              <Link to="/start-monitoring">
+                <Button variant="hero" size="lg" className="group">
+                  Start Monitoring
+                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+              <Link to="/view-results">
+                <Button variant="outline" size="lg" className="bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm">
+                  <TrendingUp className="mr-2 w-5 h-5" />
+                  View Results
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -190,10 +191,12 @@ const PrecisionAgriculture = () => {
                 ))}
               </div>
 
-              <Button variant="tech" size="lg" className="group">
-                See Case Studies
-                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
+              <Link to="/case-studies">
+                <Button variant="tech" size="lg" className="group">
+                  See Case Studies
+                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
             </div>
 
             {/* Crop Types */}
@@ -294,13 +297,17 @@ const PrecisionAgriculture = () => {
                   agriculture monitoring. Start optimizing your crops today.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button variant="accent" size="lg" className="group">
-                    Schedule Assessment
-                    <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                  <Button variant="outline" size="lg" className="border-white/20 text-white hover:bg-white/20 backdrop-blur-sm">
-                    Download Brochure
-                  </Button>
+                  <Link to="/schedule-assessment">
+                    <Button variant="accent" size="lg" className="group">
+                      Schedule Assessment
+                      <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
+                  <Link to="/download-brochure">
+                    <Button variant="outline" size="lg" className="border-white/20 text-white hover:bg-white/20 backdrop-blur-sm">
+                      Download Brochure
+                    </Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>

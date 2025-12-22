@@ -39,27 +39,6 @@ const AerialImagery = () => {
     'Emergency Response'
   ];
 
-  const pricing = [
-    {
-      name: 'Basic Package',
-      price: '$299',
-      duration: 'Half Day',
-      features: ['2 hours flight time', '4K video footage', '50+ high-res photos', 'Basic editing included']
-    },
-    {
-      name: 'Professional Package',
-      price: '$599',
-      duration: 'Full Day',
-      features: ['6 hours flight time', '4K video + raw footage', '200+ high-res photos', 'Professional editing', 'Same-day delivery']
-    },
-    {
-      name: 'Enterprise Package',
-      price: 'Custom',
-      duration: 'Multi-day',
-      features: ['Unlimited flight time', 'Multi-drone operations', 'Real-time streaming', 'Custom deliverables', '24/7 support']
-    }
-  ];
-
   return (
     <div className="min-h-screen">
       <Navbar />
@@ -110,10 +89,12 @@ const AerialImagery = () => {
                 Get Quote
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
-              <Button variant="outline" size="lg" className="bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm">
-                <Play className="mr-2 w-5 h-5" />
-                View Portfolio
-              </Button>
+              <Link to="/portfolio">
+                <Button variant="outline" size="lg" className="bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm">
+                  <Play className="mr-2 w-5 h-5" />
+                  View Portfolio
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -184,10 +165,12 @@ const AerialImagery = () => {
                 ))}
               </div>
 
-              <Button variant="tech" size="lg" className="group">
-                View Case Studies
-                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
+              <Link to="/case-studies">
+                <Button variant="tech" size="lg" className="group">
+                  View Case Studies
+                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
             </div>
 
             <div className="animate-fade-in">
@@ -219,73 +202,6 @@ const AerialImagery = () => {
                 </CardContent>
               </Card>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Section */}
-      <section className="py-20 lg:py-32">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
-              Transparent
-              <span className="block bg-tech-gradient bg-clip-text text-transparent">
-                Pricing Packages
-              </span>
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Choose the package that best fits your project needs. All packages include professional editing
-              and delivery within 48 hours.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {pricing.map((plan, index) => (
-              <Card
-                key={plan.name}
-                className={`card-hover border-border/50 animate-scale-in ${
-                  index === 1 ? 'bg-hero-gradient text-white border-accent' : 'bg-card-gradient'
-                }`}
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <CardContent className="p-8 text-center">
-                  <h3 className={`text-2xl font-bold mb-2 ${index === 1 ? 'text-white' : 'text-foreground'}`}>
-                    {plan.name}
-                  </h3>
-                  <div className="mb-6">
-                    <span className={`text-4xl font-bold ${index === 1 ? 'text-white' : 'text-foreground'}`}>
-                      {plan.price}
-                    </span>
-                    <span className={`text-sm ${index === 1 ? 'text-white/80' : 'text-muted-foreground'}`}>
-                      /{plan.duration}
-                    </span>
-                  </div>
-                  
-                  <ul className="space-y-3 mb-8">
-                    {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-center">
-                        <CheckCircle className={`w-4 h-4 mr-3 flex-shrink-0 ${
-                          index === 1 ? 'text-white' : 'text-accent'
-                        }`} />
-                        <span className={`text-sm ${
-                          index === 1 ? 'text-white/90' : 'text-muted-foreground'
-                        }`}>
-                          {feature}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <Button
-                    variant={index === 1 ? "accent" : "tech"}
-                    size="lg"
-                    className="w-full"
-                  >
-                    {plan.price === 'Custom' ? 'Contact Us' : 'Get Started'}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
           </div>
         </div>
       </section>
