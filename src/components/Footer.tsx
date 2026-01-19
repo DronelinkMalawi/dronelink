@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 import { Zap, MapPin, Phone, Mail, Facebook, Twitter, Linkedin, Instagram } from 'lucide-react';
 
 const Footer = () => {
@@ -63,12 +64,12 @@ const Footer = () => {
             <ul className="space-y-3">
               {quickLinks.map((link) => (
                 <li key={link.name}>
-                  <a
-                    href={link.href}
+                  <Link
+                    to={link.href}
                     className="text-gray-400 hover:text-accent transition-colors"
                   >
                     {link.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -133,15 +134,15 @@ const Footer = () => {
               © {currentYear} DronelinkMW. All rights reserved.
             </p>
             <div className="flex space-x-6 text-sm">
-              <a href="/privacy-policy" className="text-gray-500 hover:text-accent transition-colors">
+              <Link to="/privacy-policy" className="text-gray-500 hover:text-accent transition-colors">
                 Privacy Policy
-              </a>
-              <a href="/terms-of-service" className="text-gray-500 hover:text-accent transition-colors">
+              </Link>
+              <Link to="/terms-of-service" className="text-gray-500 hover:text-accent transition-colors">
                 Terms of Service
-              </a>
-              <a href="/cookie-policy" className="text-gray-500 hover:text-accent transition-colors">
+              </Link>
+              <Link to="/cookie-policy" className="text-gray-500 hover:text-accent transition-colors">
                 Cookie Policy
-              </a>
+              </Link>
             </div>
           </div>
         </div>

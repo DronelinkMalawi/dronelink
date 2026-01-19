@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Play, MapPin, Camera, Leaf, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import heroImage from '@/assets/hero-drone.jpg';
-import heroImageWebp from '@/assets/hero-drone.webp';
 
 const HeroSection = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -25,16 +24,13 @@ const HeroSection = () => {
     >
       {/* Background Image with Overlays */}
       <div className="absolute inset-0">
-        <picture>
-          <source srcSet={heroImageWebp} type="image/webp" />
-          <img
-            src={heroImage}
-            alt="Drone surveying an agricultural field at sunrise"
-            className="w-full h-full object-cover scale-105 transition-transform duration-[7000ms] ease-out"
-            loading="lazy"
-            fetchpriority="low"
-          />
-        </picture>
+        <img
+          src={heroImage}
+          alt="Drone surveying an agricultural field at sunrise"
+          className="w-full h-full object-cover scale-105 transition-transform duration-1000 ease-out"
+          loading="lazy"
+          fetchpriority="low"
+        />
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-blue-950/70 to-slate-950/75" aria-hidden />
       </div>
 

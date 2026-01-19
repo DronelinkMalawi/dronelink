@@ -12,19 +12,6 @@ import teamMember7 from '@/assets/1team-ceo.jpg';
 import teamMember8 from '@/assets/1team-cto.jpg';
 import teamMember9 from '@/assets/1team-pilot.jpg';
 
-interface TeamMember {
-  name: string;
-  role: string;
-  image: string;
-  bio: string;
-  expertise: string[];
-  social: {
-    linkedin: string;
-    email: string;
-    twitter: string;
-  };
-}
-
 const TeamsSection = () => {
   const [selectedMember, setSelectedMember] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
