@@ -29,7 +29,7 @@ const HeroSection = () => {
           alt="Drone surveying an agricultural field at sunrise"
           className="w-full h-full object-cover scale-105 transition-transform duration-1000 ease-out"
           loading="lazy"
-          fetchpriority="low"
+          fetchPriority="low"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-blue-950/70 to-slate-950/75" aria-hidden />
       </div>

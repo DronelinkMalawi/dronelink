@@ -52,7 +52,7 @@ const AboutSection = () => {
     >
       {/* Background Decor */}
       <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none">
-        <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', size: '40px 40px' }} />
+        <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
       </div>
 
       <div className="relative z-10 container mx-auto px-6">
