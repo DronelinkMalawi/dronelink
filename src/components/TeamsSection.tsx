@@ -1,321 +1,229 @@
+'use client';
+
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Link, Linkedin, Mail, Twitter, X } from 'lucide-react';
+import { Linkedin, Mail, Twitter, X, Award, ExternalLink } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+
 import teamCEO from '@/assets/team-ceo.jpg';
 import teamCTO from '@/assets/team-cto.jpg';
-import teamPilot from '@/assets/team-pilot.jpg';
 import teamGIS from '@/assets/team-gis.jpg';
+import teamPilot from '@/assets/team-pilot.jpg';
 import teamDev from '@/assets/team-dev.jpg';
 import teamMarketing from '@/assets/team-marketing.jpg';
-import teamMember7 from '@/assets/1team-ceo.jpg';
-import teamMember8 from '@/assets/1team-cto.jpg';
-import teamMember9 from '@/assets/1team-pilot.jpg';
 
 const TeamsSection = () => {
-  const [selectedMember, setSelectedMember] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<any>(null);
 
   const teamMembers = [
     {
       name: 'Rachel Kaunda',
       role: 'Chief Executive Officer',
       image: teamCEO,
-      bio: 'With a degree in geology and working experience in imaging and surveying, Rachel leads a team of innovative and experienced individuals at Drone Link.',
-      expertise: ['Strategic Leadership', 'Aviation Industry', 'Business Development'],
+      bio: 'With a degree in geology and extensive experience in spatial imaging, Rachel leads DroneLinkMW with a vision for integrating advanced aerial technology into Malawi’s industrial landscape.',
+      expertise: ['Strategic Leadership', 'Geological Surveying', 'Business Development'],
       social: {
         linkedin: 'https://www.linkedin.com/in/rachel-kumwenda-kaunda-2252b0168/',
         email: 'rachelkaunda@dronelinkmw.com',
-        facebook: 'https://www.linkedin.com/in/rachel-kumwenda-kaunda-2252b0168/'
-      }
+        twitter: '#',
+      },
     },
     {
       name: 'Harvey Mmangisa',
-      role: 'GIS Specialist',
+      role: 'GIS Specialist & Dev Lead',
       image: teamCTO,
-      bio: 'Computer Programmer, software developer and tutor .',
-      expertise: ['Machine Learning', 'Software Development', 'Trainer'],
+      bio: 'A veteran computer programmer and software developer, Harvey bridges the gap between raw aerial data and actionable software insights through custom ML models.',
+      expertise: ['Machine Learning', 'Spatial Programming', 'Technical Training'],
       social: {
         linkedin: 'https://www.linkedin.com/in/harvey-mmangisa-2148ba175/',
         email: 'harveymmangisa@dronelinkmw.com',
-        twitter: '#'
-      }
+        twitter: '#',
+      },
     },
     {
       name: 'Edith Kalagho',
-      role: 'Administrator & Land Surveyor',
+      role: 'Land Surveyor',
       image: teamGIS,
-      bio: 'With a degree in geology and experience in spatial analysis and remote sensing, Edith leads a team of skilled and innovative professionals at Drone Link.',
-      expertise: ['GIS Analyst', 'Spatial Analysis', ' Drone pilot'],
+      bio: 'Specializing in high-precision land surveying and spatial analysis, Edith ensures every mission meets strict accuracy standards for infrastructure projects.',
+      expertise: ['GIS Analysis', 'Cadastral Surveying', 'Remote Sensing'],
       social: {
         linkedin: '#',
         email: 'edithkalagho@dronelinkmw.com',
-        twitter: '#'
-      }
+        twitter: '#',
+      },
     },
     {
       name: 'Bright Mataya',
       role: 'Senior Drone Pilot',
       image: teamPilot,
-      bio: 'Certified commercial pilot with over 2000 flight hours. Specialized in complex aerial operations.',
-      expertise: ['Commercial Aviation', 'Aerial Photography', 'Flight Operations', 'Software Development'],
+      bio: 'A certified commercial pilot with thousands of flight hours, Bright leads our flight operations with a focus on safety and cinematic precision.',
+      expertise: ['Flight Ops', 'Aerial Cinematography', 'Safety Management'],
       social: {
         linkedin: '#',
         email: 'brightmataya@dronelinkmw.com',
-        twitter: '#'
-      }
+        twitter: '#',
+      },
     },
     {
       name: 'Mtendere Matola',
       role: 'Drone Pilot',
       image: teamDev,
-      bio: 'Geospatial expert transforming aerial data into actionable insights for agriculture and conservation.',
-      expertise: ['GIS Analysis', 'Remote Sensing', 'Environmental Monitoring'],
+      bio: 'Geospatial expert focused on transforming raw aerial captures into actionable multispectral maps for the agricultural sector.',
+      expertise: ['GIS Analysis', 'Multispectral Mapping'],
       social: {
-        linkedin: 'https://www.linkedin.com/in/harvey-mmangisa-2148ba175/',
+        linkedin: '#',
         email: 'matolamtende@dronelinkmw.com',
-        twitter: '#'
-      }
+        twitter: '#',
+      },
     },
-     {
+    {
       name: 'Aaron Amos',
-      role: 'Marketing and Strategy Lead',
+      role: 'Strategy Lead',
       image: teamMarketing,
-      bio: 'Marketing specialist driving growth and brand visibility through innovative strategies.',
-      expertise: ['Marketing', 'Strategy Development', 'Customer Relations'],
+      bio: 'Driving growth and brand visibility, Aaron ensures DroneLinkMW remains the leading choice for enterprise aerial intelligence in the region.',
+      expertise: ['Market Strategy', 'Partnerships'],
       social: {
-        linkedin: 'https://www.linkedin.com/in/harvey-mmangisa-2148ba175/',
-        email: 'matolamtende@dronelinkmw.com',
-        twitter: '#'
-      }
+        linkedin: '#',
+        email: 'aaronamos@dronelinkmw.com',
+        twitter: '#',
+      },
     },
-  
   ];
 
-  const handleMemberClick = (member) => {
+  const handleMemberClick = (member: any) => {
     setSelectedMember(member);
-    setIsModalOpen(true);
-    // Prevent body scrolling when modal is open
     document.body.style.overflow = 'hidden';
   };
 
   const closeModal = () => {
-    setIsModalOpen(false);
-    // Re-enable body scrolling
+    setSelectedMember(null);
     document.body.style.overflow = 'auto';
   };
 
   return (
-    <section id="team" className="py-20 lg:py-32">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="text-center mb-16 animate-fade-in">
-          <div className="inline-flex items-center px-4 py-2 bg-secondary/10 border border-secondary/20 rounded-full mb-6">
-            <span className="text-secondary font-medium text-sm">Our Team</span>
-          </div>
-          <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
-            Meet the Experts Behind
-            <span className="block bg-tech-gradient bg-clip-text text-transparent">
-              DronelinkMW Innovation
-            </span>
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Our diverse team of aviation experts, technology specialists, and data scientists work together 
-            to deliver cutting-edge drone solutions that transform industries across Malawi and beyond.
-          </p>
+    <section id="team" className="py-24 bg-slate-50 overflow-hidden">
+      <div className="container mx-auto px-6">
+        
+        {/* Header */}
+        <div className="max-w-2xl mb-12 md:mb-20">
+            <h2 className="text-sm font-mono text-cyan-600 tracking-[0.3em] uppercase mb-4">// THE CREW</h2>
+            <h3 className="text-4xl md:text-5xl font-bold tracking-tighter text-slate-950">
+                Driven by <span className="text-slate-400 font-light italic">Expertise.</span>
+            </h3>
         </div>
 
         {/* Team Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-          {teamMembers.map((member, index) => (
-            <Card
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          {teamMembers.map((member) => (
+            <motion.div
               key={member.name}
-              className="group card-hover bg-card-gradient border-border/50 overflow-hidden animate-scale-in cursor-pointer"
-              style={{ animationDelay: `${index * 0.1}s` }}
+              whileHover={{ y: -10 }}
               onClick={() => handleMemberClick(member)}
+              className="group cursor-pointer"
             >
-              <CardContent className="p-0">
-                {/* Image */}
-                <div className="relative overflow-hidden">
-                  <img
-                    src={member.image}
-                    alt={`${member.name} - ${member.role}`}
-                    className="w-full h-auto max-h-64 object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  
-                  {/* Social Links Overlay */}
-                  <div className="absolute bottom-4 left-4 right-4 flex justify-center space-x-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <a
-                      href={member.social.linkedin}
-                      onClick={(e) => e.stopPropagation()}
-                      className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-accent transition-colors"
-                      aria-label={`${member.name} LinkedIn`}
-                    >
-                      <Linkedin className="w-4 h-4 text-white" />
-                    </a>
-                    <a
-                      href={`mailto:${member.social.email}`}
-                      onClick={(e) => e.stopPropagation()}
-                      className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-accent transition-colors"
-                      aria-label={`Email ${member.name}`}
-                    >
-                      <Mail className="w-4 h-4 text-white" />
-                    </a>
-                    <a
-                      href={member.social.twitter || '#'}
-                      onClick={(e) => e.stopPropagation()}
-                      className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-accent transition-colors"
-                      aria-label={`${member.name} Twitter`}
-                    >
-                      <Twitter className="w-4 h-4 text-white" />
-                    </a>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-accent transition-colors">
-                    {member.name}
-                  </h3>
-                  <p className="text-secondary font-medium mb-3">{member.role}</p>
-                  <p className="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-3">
-                    {member.bio}
-                  </p>
-
-                  {/* Expertise Tags */}
-                  <div className="space-y-2">
-                    <p className="text-xs font-medium text-foreground mb-2">Expertise:</p>
-                    <div className="flex flex-wrap gap-1">
-                      {member.expertise.slice(0, 2).map((skill) => (
-                        <span
-                          key={skill}
-                          className="px-2 py-1 bg-muted/50 text-muted-foreground text-xs rounded-full"
-                        >
-                          {skill}
+              <Card className="border-none bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500">
+                <CardContent className="p-0">
+                  {/* MOBILE FIX: Added aspect-ratio and object-top to prevent head cut-offs */}
+                  <div className="relative aspect-[3/4] sm:aspect-[4/5] overflow-hidden bg-slate-200">
+                    <img
+                      src={member.image}
+                      alt={member.name}
+                      className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-8">
+                        <span className="text-white text-xs font-mono uppercase tracking-widest flex items-center gap-2">
+                            View Profile <ExternalLink className="w-3 h-3" />
                         </span>
-                      ))}
-                      {member.expertise.length > 2 && (
-                        <span className="px-2 py-1 bg-muted/50 text-muted-foreground text-xs rounded-full">
-                          +{member.expertise.length - 2} more
-                        </span>
-                      )}
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+
+                  <div className="p-8">
+                    <h3 className="text-xl font-bold text-slate-900 mb-1 tracking-tight">{member.name}</h3>
+                    <p className="text-cyan-600 font-mono text-[10px] uppercase tracking-[0.2em]">{member.role}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
           ))}
         </div>
+      </div>
 
-        {/* Modal Popup */}
-        {isModalOpen && selectedMember && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-fade-in">
-            <div 
-              className="absolute inset-0 bg-foreground/10" 
+      {/* Profile Modal */}
+      <AnimatePresence>
+        {selectedMember && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 md:p-10">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
               onClick={closeModal}
-            ></div>
-            <div className="relative bg-background border-border/50 border rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto z-10 animate-scale-in">
+              className="absolute inset-0 bg-slate-950/60 backdrop-blur-md" 
+            />
+            
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative bg-white max-w-5xl w-full rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl z-10 flex flex-col md:flex-row h-full max-h-[90vh] md:max-h-[600px]"
+            >
               <button
                 onClick={closeModal}
-                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-muted hover:bg-muted/80 transition-colors"
-                aria-label="Close"
+                className="absolute top-4 right-4 z-20 bg-slate-100 md:bg-white/10 backdrop-blur-md p-2 rounded-full text-slate-950 md:text-white transition-colors border border-black/5 md:border-white/10"
               >
                 <X className="w-5 h-5" />
               </button>
-              
-              <div className="flex flex-col md:flex-row">
-                {/* Image Section */}
-                <div className="md:w-2/5">
-                  <img
-                    src={selectedMember.image}
-                    alt={`${selectedMember.name} - ${selectedMember.role}`}
-                    className="w-full h-64 md:h-full object-cover rounded-t-xl md:rounded-l-xl md:rounded-tr-none"
-                  />
+
+              {/* MOBILE FIX: Modal image height adjusted and object-top applied */}
+              <div className="w-full md:w-2/5 h-72 sm:h-80 md:h-auto shrink-0 relative bg-slate-100">
+                <img
+                  src={selectedMember.image}
+                  alt={selectedMember.name}
+                  className="w-full h-full object-cover object-top"
+                />
+              </div>
+
+              {/* Modal Content */}
+              <div className="flex-1 p-8 md:p-16 overflow-y-auto bg-white">
+                <div className="mb-8">
+                    <h3 className="text-3xl md:text-4xl font-bold text-slate-950 mb-2 tracking-tighter">{selectedMember.name}</h3>
+                    <p className="text-cyan-600 font-mono text-xs uppercase tracking-[0.3em]">{selectedMember.role}</p>
                 </div>
-                
-                {/* Content Section */}
-                <div className="md:w-3/5 p-6 md:p-8">
-                  <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-                    {selectedMember.name}
-                  </h3>
-                  <p className="text-secondary font-medium text-lg mb-4">{selectedMember.role}</p>
-                  <p className="text-muted-foreground leading-relaxed mb-6">
-                    {selectedMember.bio}
-                  </p>
 
-                  {/* Expertise Tags */}
-                  <div className="space-y-3 mb-6">
-                    <p className="text-lg font-medium text-foreground">Areas of Expertise:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedMember.expertise.map((skill) => (
-                        <span
-                          key={skill}
-                          className="px-3 py-1.5 bg-muted text-muted-foreground text-sm rounded-full"
-                        >
-                          {skill}
-                        </span>
-                      ))}
+                <div className="space-y-8">
+                    <div>
+                        <h4 className="text-[10px] font-mono text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                            <Award className="w-3 h-3" /> Biography
+                        </h4>
+                        <p className="text-slate-600 leading-relaxed font-light text-base md:text-lg italic">
+                          "{selectedMember.bio}"
+                        </p>
                     </div>
-                  </div>
 
-                  {/* Social Links */}
-                  <div className="flex space-x-4">
-                    <a
-                      href={selectedMember.social.linkedin}
-                      className="w-10 h-10 bg-muted rounded-full flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors"
-                      aria-label={`${selectedMember.name} LinkedIn`}
-                    >
-                      <Linkedin className="w-5 h-5" />
-                    </a>
-                    <a
-                      href={`mailto:${selectedMember.social.email}`}
-                      className="w-10 h-10 bg-muted rounded-full flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors"
-                      aria-label={`Email ${selectedMember.name}`}
-                    >
-                      <Mail className="w-5 h-5" />
-                    </a>
-                    <a
-                      href={selectedMember.social.twitter || '#'}
-                      className="w-10 h-10 bg-muted rounded-full flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors"
-                      aria-label={`${selectedMember.name} Twitter`}
-                    >
-                      <Twitter className="w-5 h-5" />
-                    </a>
-                  </div>
+                    <div className="flex flex-wrap gap-2">
+                        {selectedMember.expertise.map((skill: string) => (
+                            <span key={skill} className="px-3 py-1.5 md:px-4 md:py-2 bg-slate-100 text-slate-600 rounded-full text-[9px] md:text-[10px] font-bold uppercase tracking-widest border border-slate-200">
+                                {skill}
+                            </span>
+                        ))}
+                    </div>
+
+                    <div className="pt-8 border-t border-slate-100 flex items-center gap-6">
+                        <a href={selectedMember.social.linkedin} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-cyan-600 transition-colors">
+                            <Linkedin className="w-5 h-5" />
+                        </a>
+                        <a href={`mailto:${selectedMember.social.email}`} className="text-slate-400 hover:text-cyan-600 transition-colors">
+                            <Mail className="w-5 h-5" />
+                        </a>
+                        <a href={selectedMember.social.twitter} className="text-slate-400 hover:text-cyan-600 transition-colors">
+                            <Twitter className="w-5 h-5" />
+                        </a>
+                    </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         )}
-
-        {/* Join Team CTA */}
-        <div className="text-center">
-          <Card className="bg-hero-gradient text-white max-w-4xl mx-auto animate-fade-in">
-            <CardContent className="p-8 md:p-12">
-              <h3 className="text-2xl md:text-3xl font-bold mb-4">
-                Join Our Growing Team
-              </h3>
-              <p className="text-white/90 mb-8 max-w-2xl mx-auto">
-                We're always looking for talented individuals who share our passion for innovation 
-                and excellence in drone technology. Explore career opportunities with DronelinkMW.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link to="/open-positions">
-                  <Button variant="accent" size="lg">
-                    View Open Positions
-                  </Button>
-                </Link>
-                <Link to="/submit-resume">
-                  <Button variant="outline" size="lg" className="border-white/20 text-white hover:bg-white/20 backdrop-blur-sm">
-                    Submit Resume
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+      </AnimatePresence>
     </section>
   );
 };

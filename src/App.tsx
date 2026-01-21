@@ -3,6 +3,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ThemeProvider } from "next-themes";
+import FaviconThemeSwitcher from "@/components/FaviconThemeSwitcher";
 import Index from "./pages/Index";
 import AerialImagery from "./pages/AerialImagery";
 import GISMapping from "./pages/GISMapping";
@@ -54,12 +56,14 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { TeamProvider } from "./contexts/TeamContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SupabaseTest from "./components/SupabaseTest";
+import ScrollToHash from "./components/ScrollToHash";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <>
     <SkipToContent />
+    <ScrollToHash offset={96} />
     <main id="main" className="min-h-screen">
       <Routes>
         <Route path="/" element={<Index />} />
@@ -128,17 +132,20 @@ const App = () => (
 
 const Root = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <AuthProvider>
-        <TeamProvider>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
-        </TeamProvider>
-      </AuthProvider>
-    </TooltipProvider>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <FaviconThemeSwitcher />
+        <AuthProvider>
+          <TeamProvider>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </TeamProvider>
+        </AuthProvider>
+      </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

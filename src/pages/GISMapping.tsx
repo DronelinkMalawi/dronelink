@@ -1,325 +1,222 @@
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, MapPin, CheckCircle, Globe, Layers, BarChart3, ArrowRight } from 'lucide-react';
+import {
+  ArrowLeft,
+  ArrowRight,
+  MapPin,
+  Globe,
+  Layers,
+  BarChart3,
+  CheckCircle,
+  Maximize,
+  Database,
+  Compass,
+  Zap,
+  ChevronRight
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
-import gisHero from '@/assets/gis-mapping-hero.jpg';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import gisHero from '@/assets/gis-mapping-hero.jpg';
 
-const GISMapping = () => {
-  const capabilities = [
-    {
-      icon: Globe,
-      title: '3D Terrain Modeling',
-      description: 'Create detailed 3D models and digital elevation maps for comprehensive terrain analysis.'
-    },
-    {
-      icon: MapPin,
-      title: 'Boundary Mapping',
-      description: 'Precise property boundary surveys and land parcel mapping with GPS accuracy.'
-    },
-    {
-      icon: Layers,
-      title: 'Topographic Surveys',
-      description: 'Professional topographic mapping for engineering and construction projects.'
-    },
-    {
-      icon: BarChart3,
-      title: 'CAD Integration',
-      description: 'Seamless integration with CAD software for engineering and architectural workflows.'
-    }
-  ];
+// Define the data structure for the interactive section
+const DELIVERABLES_DATA = [
+  { 
+    id: 'ortho',
+    title: 'Orthomosaic Maps', 
+    description: 'Georeferenced, high-resolution aerial imagery.',
+    details: 'Our orthomosaics are stitched from hundreds of high-res photos, corrected for topographic relief and lens distortion.',
+    useCases: ['Encroachment monitoring', 'Project progress tracking', 'Asset inspection'],
+    specs: 'Resolution: up to 1cm/pixel'
+  },
+  { 
+    id: 'dem',
+    title: 'Digital Elevation Models', 
+    description: 'Accurate terrain and surface elevation data.',
+    details: 'Essential for hydrological modeling and site grading. We provide both DSM (Surface) and DTM (Terrain) models.',
+    useCases: ['Flood risk analysis', 'Road alignment planning', 'Site leveling'],
+    specs: 'Accuracy: < 5cm Vertical'
+  },
+  { 
+    id: 'contour',
+    title: 'Contour Maps', 
+    description: 'Engineering-grade contour datasets.',
+    details: 'Traditional survey outputs generated from dense point clouds, ready for immediate engineering use.',
+    useCases: ['Architectural design', 'Land subdivision', 'Drainage planning'],
+    specs: 'Intervals: 0.25m to 5m'
+  },
+  { 
+    id: 'vol',
+    title: 'Volume Calculations', 
+    description: 'Stockpile and cut/fill measurements.',
+    details: 'Fast and safe volumetric analysis without manual climbing. Ideal for mining and construction logistics.',
+    useCases: ['Stockpile inventory', 'Earthworks balance', 'Quarry management'],
+    specs: 'Precision: 98-99%'
+  },
+  { 
+    id: 'cad',
+    title: 'CAD-Ready Files', 
+    description: 'Standard .dwg and .dxf survey outputs.',
+    details: 'Vectorized data that integrates directly into your existing AutoCAD, Civil 3D, or Revit workflows.',
+    useCases: ['BIM integration', 'Construction staking', 'Legal boundary filing'],
+    specs: 'Format: .DWG, .DXF, .SHP'
+  }
+];
 
-  const applications = [
-    'Land Development Planning',
-    'Mining & Quarry Operations',
-    'Infrastructure Projects',
-    'Urban Planning',
-    'Environmental Assessments',
-    'Agricultural Land Management'
-  ];
+export default function GISMapping() {
+  const [activeItem, setActiveItem] = useState(DELIVERABLES_DATA[0]);
 
-  const deliverables = [
-    {
-      title: 'Orthomosaic Maps',
-      description: 'High-resolution, georeferenced aerial maps perfect for planning and analysis.'
-    },
-    {
-      title: 'Digital Elevation Models (DEM)',
-      description: '3D terrain models showing elevation changes and topographic features.'
-    },
-    {
-      title: 'Contour Maps',
-      description: 'Detailed contour lines for engineering design and construction planning.'
-    },
-    {
-      title: 'Volume Calculations',
-      description: 'Accurate stockpile and cut/fill volume measurements for construction projects.'
-    },
-    {
-      title: 'CAD-Ready Files',
-      description: 'Survey data exported in formats compatible with AutoCAD and other design software.'
-    },
-    {
-      title: 'GIS Database',
-      description: 'Comprehensive spatial database for ongoing project management and analysis.'
-    }
-  ];
+  // Add this block at the top of your component
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'instant' // Use 'instant' to prevent the user from seeing the jump
+    });
+  }, []);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-emerald-100">
       <Navbar />
-      
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-        <div className="absolute inset-0">
-          <img
-            src={gisHero}
-            alt="GIS mapping and spatial analysis"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 hero-gradient opacity-80"></div>
-          <div className="absolute inset-0 bg-background/20"></div>
+
+      {/* ================= HERO SECTION (Condensed for Focus) ================= */}
+      <section className="relative min-h-[70vh] flex items-center overflow-hidden pt-20">
+        <div className="absolute inset-0 z-0">
+          <img src={gisHero} alt="GIS" className="w-full h-full object-cover opacity-10" />
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent" />
         </div>
-
-        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="max-w-4xl mx-auto animate-fade-in-up">
-            <div className="mb-8">
-              <Link to="/#services">
-                <Button variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm">
-                  <ArrowLeft className="mr-2 w-4 h-4" />
-                  Back to Services
-                </Button>
-              </Link>
+        <div className="relative z-10 container mx-auto px-6">
+          <div className="max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-100 bg-emerald-50 text-emerald-600 text-[10px] font-mono tracking-[0.2em] uppercase mb-8">
+              <Compass className="w-3 h-3" />
+              Spatial Intelligence Suite
             </div>
-
-            <div className="inline-flex items-center px-4 py-2 bg-card/20 backdrop-blur-sm border border-border/30 rounded-full mb-8">
-              <MapPin className="w-4 h-4 text-accent mr-2" />
-              <span className="text-accent font-medium text-sm">GIS Mapping & Analysis</span>
-            </div>
-
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-              Advanced GIS Mapping
-              <span className="block bg-tech-gradient bg-clip-text text-transparent">
-                & Spatial Analysis
-              </span>
+            <h1 className="text-5xl md:text-7xl font-medium tracking-tighter leading-[0.9] mb-8 text-slate-950">
+              Interactive <span className="text-emerald-600 italic font-light">GIS</span> <br />
+              Data Solutions.
             </h1>
-
-            <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Professional geographic information systems and comprehensive spatial data analysis for land surveying,
-              urban planning, and infrastructure development projects.
+            <p className="text-lg text-slate-500 max-w-xl mb-10 font-light leading-relaxed">
+              Explore our precision deliverables. Select a data type below to see how it transforms your industry operations.
             </p>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button variant="hero" size="lg" className="group">
-                Request Survey
-                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
-              <Button variant="outline" size="lg" className="bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm">
-                <Globe className="mr-2 w-5 h-5" />
-                View Samples
-              </Button>
-            </div>
           </div>
         </div>
       </section>
 
-      {/* Capabilities Section */}
-      <section className="py-20 lg:py-32">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
-              Comprehensive Mapping
-              <span className="block bg-tech-gradient bg-clip-text text-transparent">
-                & Survey Capabilities
-              </span>
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Our advanced GIS mapping services combine cutting-edge drone technology with professional
-              surveying expertise to deliver precise spatial data solutions.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {capabilities.map((capability, index) => (
-              <Card
-                key={capability.title}
-                className="card-hover bg-card-gradient border-border/50 animate-scale-in"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <capability.icon className="w-8 h-8 text-primary" />
+      {/* ================= INTERACTIVE DASHBOARD SECTION ================= */}
+      <section className="py-24 px-6 bg-slate-50/50">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-12 gap-12 items-stretch">
+            
+            {/* LEFT: SELECTION LIST (5 Columns) */}
+            <div className="lg:col-span-5 space-y-4">
+              <h3 className="text-sm font-mono text-emerald-600 tracking-[0.3em] uppercase mb-8">
+                // SELECT DELIVERABLE
+              </h3>
+              {DELIVERABLES_DATA.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveItem(item)}
+                  className={`w-full text-left p-6 rounded-2xl border transition-all duration-300 flex items-center justify-between group ${
+                    activeItem.id === item.id 
+                    ? 'bg-white border-emerald-500 shadow-xl ring-1 ring-emerald-500' 
+                    : 'bg-transparent border-slate-200 hover:border-emerald-300 hover:bg-white'
+                  }`}
+                >
+                  <div>
+                    <h4 className={`font-bold transition-colors ${activeItem.id === item.id ? 'text-emerald-600' : 'text-slate-900'}`}>
+                      {item.title}
+                    </h4>
+                    <p className="text-xs text-slate-500 mt-1 font-light">{item.description}</p>
                   </div>
-                  <h3 className="text-xl font-bold text-foreground mb-3">{capability.title}</h3>
-                  <p className="text-muted-foreground">{capability.description}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Applications & Deliverables */}
-      <section className="py-20 lg:py-32 bg-muted/50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-            {/* Applications */}
-            <div className="animate-slide-in-left">
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
-                Industry
-                <span className="block bg-tech-gradient bg-clip-text text-transparent">
-                  Applications
-                </span>
-              </h2>
-              <p className="text-lg text-muted-foreground mb-8">
-                Our GIS mapping services serve diverse industries with precise spatial data
-                solutions tailored to specific project requirements.
-              </p>
-              
-              <div className="grid grid-cols-1 gap-4 mb-8">
-                {applications.map((application, index) => (
-                  <div
-                    key={application}
-                    className="flex items-center space-x-3 p-4 bg-card/50 rounded-lg animate-fade-in"
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                  >
-                    <CheckCircle className="w-5 h-5 text-accent flex-shrink-0" />
-                    <span className="text-foreground font-medium">{application}</span>
-                  </div>
-                ))}
-              </div>
-
-              <Link to="/#contact">
-                <Button variant="tech" size="lg" className="group">
-                  Discuss Your Project
-                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
+                  <ChevronRight className={`w-5 h-5 transition-transform ${activeItem.id === item.id ? 'translate-x-1 text-emerald-500' : 'text-slate-300'}`} />
+                </button>
+              ))}
             </div>
 
-            {/* Deliverables */}
-            <div className="animate-fade-in">
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
-                Project
-                <span className="block bg-tech-gradient bg-clip-text text-transparent">
-                  Deliverables
-                </span>
-              </h2>
-              <p className="text-lg text-muted-foreground mb-8">
-                Comprehensive data packages delivered in industry-standard formats
-                for immediate use in your workflows.
-              </p>
+            {/* RIGHT: DYNAMIC PREVIEW PANEL (7 Columns) */}
+            <div className="lg:col-span-7">
+              <div className="bg-slate-950 rounded-[2.5rem] p-10 md:p-14 h-full relative overflow-hidden text-white flex flex-col shadow-2xl transition-all duration-500">
+                {/* Background Decoration */}
+                <div className="absolute top-0 right-0 p-12 opacity-[0.03]">
+                    <Layers className="w-96 h-96" />
+                </div>
 
-              <div className="space-y-4">
-                {deliverables.map((deliverable, index) => (
-                  <Card
-                    key={deliverable.title}
-                    className="card-hover bg-card-gradient border-border/50 animate-scale-in"
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                  >
-                    <CardContent className="p-4">
-                      <h3 className="font-bold text-foreground mb-2">{deliverable.title}</h3>
-                      <p className="text-sm text-muted-foreground">{deliverable.description}</p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Process Section */}
-      <section className="py-20 lg:py-32">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
-              Our Proven
-              <span className="block bg-tech-gradient bg-clip-text text-transparent">
-                Survey Process
-              </span>
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              From initial consultation to final delivery, we follow a systematic approach
-              to ensure accuracy and client satisfaction.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {[
-              {
-                step: '01',
-                title: 'Site Assessment',
-                description: 'Initial consultation and site evaluation to determine project scope and requirements.'
-              },
-              {
-                step: '02',
-                title: 'Flight Planning',
-                description: 'Detailed flight path planning and ground control point establishment for maximum accuracy.'
-              },
-              {
-                step: '03',
-                title: 'Data Collection',
-                description: 'Professional drone survey operations with high-precision GPS and imaging equipment.'
-              },
-              {
-                step: '04',
-                title: 'Data Processing',
-                description: 'Advanced photogrammetric processing and GIS analysis to create final deliverables.'
-              },
-              {
-                step: '05',
-                title: 'Data Analysis',
-                description: 'Advanced photogrammetric processing and GIS analysis to create final deliverables.'
-              },
-              {
-                step: '06',
-                title: 'Project Delivery',
-                description: 'Advanced photogrammetric processing and GIS analysis to create final deliverables.'
-              },
-            ].map((process, index) => (
-              <Card
-                key={process.step}
-                className="card-hover bg-card-gradient border-border/50 animate-scale-in text-center"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <CardContent className="p-6">
-                  <div className="w-16 h-16 bg-hero-gradient rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-2xl font-bold text-white">{process.step}</span>
+                <div className="relative z-10 flex-1">
+                  <div className="flex items-center gap-3 mb-6">
+                    <span className="h-[1px] w-12 bg-emerald-500" />
+                    <span className="text-emerald-500 font-mono text-xs tracking-widest uppercase">Intelligence Module</span>
                   </div>
-                  <h3 className="text-xl font-bold text-foreground mb-3">{process.title}</h3>
-                  <p className="text-muted-foreground">{process.description}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
 
-          <div className="text-center mt-16">
-            <Card className="bg-hero-gradient text-white max-w-4xl mx-auto">
-              <CardContent className="p-8 md:p-12">
-                <h3 className="text-2xl md:text-3xl font-bold mb-4">
-                  Ready to Start Your Mapping Project?
-                </h3>
-                <p className="text-white/90 mb-8">
-                  Get professional GIS mapping and spatial analysis services backed by our
-                  expert team and cutting-edge technology.
-                </p>
-<Link to="/contact">
-                  <Button variant="accent" size="lg" className="group">
-                    Get Free Consultation
-                    <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  <h2 className="text-3xl md:text-4xl font-semibold mb-6 tracking-tight">
+                    {activeItem.title}
+                  </h2>
+                  
+                  <p className="text-slate-400 text-lg font-light leading-relaxed mb-10 border-l border-white/10 pl-6">
+                    {activeItem.details}
+                  </p>
+
+                  <div className="grid md:grid-cols-2 gap-8 mb-10">
+                    <div>
+                      <h5 className="text-emerald-400 text-[10px] font-mono tracking-widest uppercase mb-4">Core Applications</h5>
+                      <ul className="space-y-3">
+                        {activeItem.useCases.map((u, i) => (
+                          <li key={i} className="flex items-center gap-3 text-sm text-slate-300">
+                            <CheckCircle className="w-4 h-4 text-emerald-500/50" />
+                            {u}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                        <h5 className="text-emerald-400 text-[10px] font-mono tracking-widest uppercase mb-4">Technical Specs</h5>
+                        <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
+                            <div className="flex items-center gap-3 text-sm text-slate-200 italic">
+                                <Zap className="w-4 h-4 text-emerald-500" />
+                                {activeItem.specs}
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="relative z-10 pt-8 border-t border-white/10 flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                        <Database className="w-5 h-5 text-emerald-400" />
+                    </div>
+                    <span className="text-xs text-slate-500 uppercase tracking-widest">Survey Grade Verified</span>
+                  </div>
+                  <Button variant="outline" className="border-white/20 text-white hover:bg-white/10 rounded-full">
+                    View Sample Case
                   </Button>
-                </Link>
-              </CardContent>
-            </Card>
+                </div>
+              </div>
+            </div>
+
           </div>
+        </div>
+      </section>
+
+      {/*  */}
+
+      {/* ================= FINAL CTA ================= */}
+      <section className="py-32 px-6">
+        <div className="max-w-5xl mx-auto bg-emerald-600 rounded-[3rem] p-16 md:p-24 text-center relative overflow-hidden shadow-2xl">
+          <h2 className="text-4xl md:text-6xl font-bold text-white mb-8 tracking-tighter">Ready for precision?</h2>
+          <Link to="/contact">
+            <Button className="h-16 px-10 bg-white text-emerald-600 font-bold hover:scale-105 transition-transform rounded-full shadow-xl">
+              GET FREE CONSULTATION <ArrowRight className="ml-2 w-4 h-4" />
+            </Button>
+          </Link>
         </div>
       </section>
 
       <Footer />
     </div>
   );
-};
-
-export default GISMapping;
+}

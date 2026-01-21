@@ -8,10 +8,48 @@
     <meta name="author" content="Drone Link Malawi" />
     <meta name="keywords" content="drone services Malawi, aerial imagery Malawi, GIS mapping Malawi, precision agriculture Malawi, land monitoring Malawi, drone company in Malawi, UAV services Malawi" />
     <meta name="robots" content="index, follow" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="preload" href="/fonts/Inter-Variable.woff2" as="font" type="font/woff2" crossorigin>
+    
+    <!-- Theme-based favicons -->
+    <link rel="icon" type="image/png" href="/favicon-light.png" id="favicon-light" />
+    <link rel="icon" type="image/png" href="/favicon-dark.png" id="favicon-dark" />
+    
+    <!-- Favicon theme switcher script -->
+    <script>
+      // Function to update favicon based on theme
+      function updateFavicon() {
+        const isDark = document.body.classList.contains('dark') || 
+                       document.documentElement.classList.contains('dark') ||
+                       window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        const lightFavicon = document.getElementById('favicon-light');
+        const darkFavicon = document.getElementById('favicon-dark');
+        
+        if (lightFavicon && darkFavicon) {
+          if (isDark) {
+            lightFavicon.removeAttribute('rel');
+            darkFavicon.setAttribute('rel', 'icon');
+          } else {
+            darkFavicon.removeAttribute('rel');
+            lightFavicon.setAttribute('rel', 'icon');
+          }
+        }
+      }
+      
+      // Initial favicon setup
+      document.addEventListener('DOMContentLoaded', updateFavicon);
+      
+      // Watch for theme changes
+      const observer = new MutationObserver(updateFavicon);
+      observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+      
+      // Watch for system theme changes
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateFavicon);
+    </script>
 
     <meta property="og:title" content="Drone Link Malawi - Professional Drone Services in Malawi" />
     <meta property="og:description" content="Drone Link Malawi offers professional drone services in Malawi, including aerial imagery, GIS mapping, precision agriculture, and land health monitoring. Contact us for cutting-edge drone technology and spatial analysis." />
