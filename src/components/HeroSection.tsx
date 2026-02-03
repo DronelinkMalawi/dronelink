@@ -47,11 +47,7 @@ const HeroSection = () => {
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div className={`max-w-5xl mx-auto transition-all duration-1000 ease-out ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-          <div className="inline-flex items-center px-4 py-2 bg-white/8 backdrop-blur-sm border border-blue-400/20 rounded-full mb-8 hover:bg-white/12 transition-all duration-300">
-            <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-2.5" />
-            <span className="text-white/90 font-medium text-sm tracking-wide">Enterprise Drone Solutions</span>
-          </div>
-
+          
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 leading-tight tracking-tight">
             Intelligent Aerial Solutions
           </h1>

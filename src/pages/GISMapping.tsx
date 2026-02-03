@@ -208,7 +208,7 @@ export default function GISMapping() {
       <section className="py-32 px-6">
         <div className="max-w-5xl mx-auto bg-emerald-600 rounded-[3rem] p-16 md:p-24 text-center relative overflow-hidden shadow-2xl">
           <h2 className="text-4xl md:text-6xl font-bold text-white mb-8 tracking-tighter">Ready for precision?</h2>
-          <Link to="/contact">
+          <Link to="/#contact">
             <Button className="h-16 px-10 bg-white text-emerald-600 font-bold hover:scale-105 transition-transform rounded-full shadow-xl">
               GET FREE CONSULTATION <ArrowRight className="ml-2 w-4 h-4" />
             </Button>

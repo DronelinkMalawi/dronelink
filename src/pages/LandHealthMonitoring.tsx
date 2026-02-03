@@ -235,9 +235,12 @@ export default function LandHealthMonitoring() {
         <div className="max-w-5xl mx-auto relative overflow-hidden bg-emerald-600 p-16 md:p-24 text-center rounded-[3rem] shadow-2xl shadow-emerald-100">
           <Activity className="absolute top-0 left-0 w-64 h-64 text-white/10 -translate-x-20 -translate-y-20" />
           <h2 className="text-4xl md:text-6xl font-bold mb-8 text-white tracking-tighter">Protect the <br />next frontier.</h2>
-          <button className="px-12 py-5 bg-white text-emerald-600 font-bold hover:scale-105 transition-transform rounded-full shadow-xl relative z-10">
-            GET STARTED NOW
-          </button>
+          <Link to="/#contact">
+            <button className="px-12 py-5 bg-white text-emerald-600 font-bold hover:scale-105 transition-transform rounded-full shadow-xl relative z-10">
+              GET STARTED NOW
+            </button>
+          </Link>
+          
         </div>
       </section>
 

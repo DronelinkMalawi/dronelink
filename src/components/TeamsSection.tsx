@@ -28,18 +28,7 @@ const TeamsSection = () => {
         twitter: '#',
       },
     },
-    {
-      name: 'Harvey Mmangisa',
-      role: 'GIS Specialist & Dev Lead',
-      image: teamCTO,
-      bio: 'A veteran computer programmer and software developer, Harvey bridges the gap between raw aerial data and actionable software insights through custom ML models.',
-      expertise: ['Machine Learning', 'Spatial Programming', 'Technical Training'],
-      social: {
-        linkedin: 'https://www.linkedin.com/in/harvey-mmangisa-2148ba175/',
-        email: 'harveymmangisa@dronelinkmw.com',
-        twitter: '#',
-      },
-    },
+    
     {
       name: 'Edith Kalagho',
       role: 'Land Surveyor',
@@ -64,18 +53,7 @@ const TeamsSection = () => {
         twitter: '#',
       },
     },
-    {
-      name: 'Mtendere Matola',
-      role: 'Drone Pilot',
-      image: teamDev,
-      bio: 'Geospatial expert focused on transforming raw aerial captures into actionable multispectral maps for the agricultural sector.',
-      expertise: ['GIS Analysis', 'Multispectral Mapping'],
-      social: {
-        linkedin: '#',
-        email: 'matolamtende@dronelinkmw.com',
-        twitter: '#',
-      },
-    },
+    
     {
       name: 'Aaron Amos',
       role: 'Strategy Lead',
