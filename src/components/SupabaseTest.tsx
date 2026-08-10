@@ -9,9 +9,10 @@ const SupabaseTest = () => {
         throw error;
       }
       alert('✅ Supabase connection successful!');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Supabase connection error:', error);
-      alert(`❌ Supabase connection failed: ${error.message}`);
+      const err = error as { message?: string };
+      alert(`❌ Supabase connection failed: ${err?.message || 'Unknown error'}`);
     }
   };
 

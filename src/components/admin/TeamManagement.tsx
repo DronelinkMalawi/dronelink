@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Users, Plus, Edit, Trash2, Star, Mail, Phone, MapPin, Upload, X, Camera } from 'lucide-react';
+import { Users, Plus, Edit, Trash2, Mail, Phone, Upload, X, Camera } from 'lucide-react';
 import { useTeam } from '@/contexts/TeamContext';
 import { supabase } from '@/lib/supabase';
 
@@ -105,8 +105,11 @@ const handleUpdateMember = async () => {
         }
       }
 
+      // Only send editable fields - exclude id, created_at, updated_at
+      const { id: _id, created_at: _createdAt, updated_at: _updatedAt, profile_image_url: _oldImage, ...cleanData } = formData as Record<string, unknown>;
+
       await updateTeamMember(editingMember.id, {
-        ...formData,
+        ...cleanData,
         profile_image_url: profileImageUrl
       });
       setEditingMember(null);

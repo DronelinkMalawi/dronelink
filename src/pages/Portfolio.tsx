@@ -3,18 +3,22 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { supabase } from '@/lib/supabase';
-import { Calendar, User, Tag } from 'lucide-react';
+import { Search, ArrowRight, Star } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface PortfolioItem {
   id: string;
   title: string;
+  slug: string;
   description: string;
-  image_url: string;
+  featured_image_url: string;
   category: string;
   client: string;
-  completion_date: string;
+  project_date: string;
   technologies: string[];
+  is_featured: boolean;
   created_at: string;
 }
 
@@ -22,6 +26,7 @@ const Portfolio = () => {
   const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetchPortfolioItems();
@@ -32,6 +37,8 @@ const Portfolio = () => {
       const { data, error } = await supabase
         .from('portfolio_items')
         .select('*')
+        .eq('is_published', true)
+        .order('is_featured', { ascending: false })
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -45,9 +52,17 @@ const Portfolio = () => {
 
   const categories = ['All', ...Array.from(new Set(portfolioItems.map(item => item.category)))];
 
-  const filteredItems = selectedCategory === 'All'
-    ? portfolioItems
-    : portfolioItems.filter(item => item.category === selectedCategory);
+  const filteredItems = portfolioItems.filter(item => {
+    const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
+    const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.client?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.technologies?.some(tech => tech.toLowerCase().includes(searchTerm.toLowerCase()));
+    return matchesCategory && matchesSearch;
+  });
+
+  const featuredItems = filteredItems.filter(item => item.is_featured);
+  const regularItems = filteredItems.filter(item => !item.is_featured);
 
   if (loading) {
     return (
@@ -69,10 +84,23 @@ const Portfolio = () => {
       <Navbar />
       <main className="container mx-auto px-4 py-16">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-white mb-4">Our Portfolio</h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Our Portfolio</h1>
           <p className="text-gray-300 max-w-2xl mx-auto mb-8">
             Explore our successful drone projects and see how we've helped clients achieve their goals.
           </p>
+
+          {/* Search Bar */}
+          <div className="max-w-md mx-auto mb-8">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Search projects, clients, technologies..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="bg-slate-800 border-slate-700 text-white pl-10"
+              />
+            </div>
+          </div>
 
           {/* Category Filter */}
           <div className="flex flex-wrap justify-center gap-2 mb-8">
@@ -97,70 +125,158 @@ const Portfolio = () => {
             <div className="text-6xl mb-4">📁</div>
             <h3 className="text-xl font-semibold text-white mb-2">No portfolio items found</h3>
             <p className="text-gray-400">
-              {selectedCategory === 'All'
-                ? 'Portfolio items will appear here once added through the admin panel.'
-                : `No items found in the "${selectedCategory}" category.`
+              {searchTerm || selectedCategory !== 'All'
+                ? 'Try adjusting your search or filters.'
+                : 'Portfolio items will appear here once added through the admin panel.'
               }
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredItems.map((item) => (
-              <Card key={item.id} className="bg-slate-800/50 border-slate-700 overflow-hidden hover:bg-slate-700/50 transition-colors">
-                <div className="aspect-video bg-slate-700 relative overflow-hidden">
-                  {item.image_url ? (
-                    <img
-                      src={item.image_url}
-                      alt={item.title}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400">
-                      <div className="text-4xl">🖼️</div>
-                    </div>
-                  )}
-                  <div className="absolute top-4 left-4">
-                    <Badge variant="secondary" className="bg-blue-600/90 text-white">
-                      {item.category}
-                    </Badge>
-                  </div>
+          <>
+            {/* Featured Items */}
+            {featuredItems.length > 0 && (
+              <div className="mb-16">
+                <div className="flex items-center gap-2 mb-8">
+                  <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
+                  <h2 className="text-2xl font-bold text-white">Featured Projects</h2>
                 </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {featuredItems.map((item) => (
+                    <Link key={item.id} to={`/portfolio/${item.slug}`} className="group">
+                      <Card className="bg-slate-800/50 border-slate-700 overflow-hidden hover:bg-slate-700/50 hover:border-yellow-500/30 transition-all duration-300 h-full">
+                        <div className="aspect-video bg-slate-700 relative overflow-hidden">
+                          {item.featured_image_url ? (
+                            <img
+                              src={item.featured_image_url}
+                              alt={item.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-400">
+                              <div className="text-4xl">🖼️</div>
+                            </div>
+                          )}
+                          <div className="absolute top-4 left-4">
+                            <Badge variant="secondary" className="bg-blue-600/90 text-white">
+                              {item.category}
+                            </Badge>
+                          </div>
+                          <div className="absolute top-4 right-4">
+                            <Badge className="bg-yellow-500 text-yellow-900">
+                              ★ Featured
+                            </Badge>
+                          </div>
+                        </div>
 
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold text-white mb-2">{item.title}</h3>
-                  <p className="text-gray-300 mb-4 line-clamp-3">{item.description}</p>
+                        <CardContent className="p-6">
+                          <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-yellow-400 transition-colors">{item.title}</h3>
+                          <p className="text-gray-300 mb-4 line-clamp-3">{item.description}</p>
 
-                  <div className="space-y-3">
-                    <div className="flex items-center text-sm text-gray-400">
-                      <User className="h-4 w-4 mr-2" />
-                      <span>Client: {item.client}</span>
-                    </div>
+                          <div className="space-y-3">
+                            <div className="text-sm text-gray-400">
+                              Client: {item.client}
+                            </div>
 
-                    <div className="flex items-center text-sm text-gray-400">
-                      <Calendar className="h-4 w-4 mr-2" />
-                      <span>Completed: {new Date(item.completion_date).toLocaleDateString()}</span>
-                    </div>
+                            <div className="text-sm text-gray-400">
+                              Completed: {new Date(item.project_date).toLocaleDateString()}
+                            </div>
 
-                    <div className="flex items-start text-sm text-gray-400">
-                      <Tag className="h-4 w-4 mr-2 mt-0.5" />
-                      <div className="flex flex-wrap gap-1">
-                        {item.technologies.slice(0, 3).map((tech, index) => (
-                          <Badge key={index} variant="outline" className="text-xs border-slate-600 text-slate-300">
-                            {tech}
-                          </Badge>
-                        ))}
-                        {item.technologies.length > 3 && (
-                          <Badge variant="outline" className="text-xs border-slate-600 text-slate-400">
-                            +{item.technologies.length - 3}
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                            <div className="flex flex-wrap gap-1">
+                              {item.technologies.slice(0, 3).map((tech, index) => (
+                                <Badge key={index} variant="outline" className="text-xs border-slate-600 text-slate-300">
+                                  {tech}
+                                </Badge>
+                              ))}
+                              {item.technologies.length > 3 && (
+                                <Badge variant="outline" className="text-xs border-slate-600 text-slate-400">
+                                  +{item.technologies.length - 3}
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="mt-4 pt-4 border-t border-slate-700 flex items-center justify-between">
+                            <span className="text-sm text-blue-400 group-hover:text-blue-300 font-medium">
+                              View Project
+                            </span>
+                            <ArrowRight className="h-4 w-4 text-blue-400 group-hover:translate-x-1 transition-transform" />
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* All Items */}
+            {regularItems.length > 0 && (
+              <div>
+                <h2 className="text-2xl font-bold text-white mb-8">All Projects</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {regularItems.map((item) => (
+                    <Link key={item.id} to={`/portfolio/${item.slug}`} className="group">
+                      <Card className="bg-slate-800/50 border-slate-700 overflow-hidden hover:bg-slate-700/50 hover:border-blue-500/30 transition-all duration-300 h-full">
+                        <div className="aspect-video bg-slate-700 relative overflow-hidden">
+                          {item.featured_image_url ? (
+                            <img
+                              src={item.featured_image_url}
+                              alt={item.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-400">
+                              <div className="text-4xl">🖼️</div>
+                            </div>
+                          )}
+                          <div className="absolute top-4 left-4">
+                            <Badge variant="secondary" className="bg-blue-600/90 text-white">
+                              {item.category}
+                            </Badge>
+                          </div>
+                        </div>
+
+                        <CardContent className="p-6">
+                          <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-blue-400 transition-colors">{item.title}</h3>
+                          <p className="text-gray-300 mb-4 line-clamp-3">{item.description}</p>
+
+                          <div className="space-y-3">
+                            <div className="text-sm text-gray-400">
+                              Client: {item.client}
+                            </div>
+
+                            <div className="text-sm text-gray-400">
+                              Completed: {new Date(item.project_date).toLocaleDateString()}
+                            </div>
+
+                            <div className="flex flex-wrap gap-1">
+                              {item.technologies.slice(0, 3).map((tech, index) => (
+                                <Badge key={index} variant="outline" className="text-xs border-slate-600 text-slate-300">
+                                  {tech}
+                                </Badge>
+                              ))}
+                              {item.technologies.length > 3 && (
+                                <Badge variant="outline" className="text-xs border-slate-600 text-slate-400">
+                                  +{item.technologies.length - 3}
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="mt-4 pt-4 border-t border-slate-700 flex items-center justify-between">
+                            <span className="text-sm text-blue-400 group-hover:text-blue-300 font-medium">
+                              View Project
+                            </span>
+                            <ArrowRight className="h-4 w-4 text-blue-400 group-hover:translate-x-1 transition-transform" />
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         )}
       </main>
       <Footer />

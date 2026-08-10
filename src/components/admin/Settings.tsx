@@ -26,6 +26,7 @@ const SettingsComponent = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [hasChanges, setHasChanges] = useState(false);
 
   const categories = [
     { id: 'profile', name: 'My Profile', icon: User },
@@ -58,7 +59,12 @@ const SettingsComponent = () => {
       setSettings(settingsMap);
     } catch (err) {
       console.error('Error fetching settings:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch settings');
+      const error = err as { code?: string; message?: string };
+      if (error?.code === '42P01' || error?.message?.includes('relation') || error?.message?.includes('does not exist')) {
+        setError('Settings table not found. Please run the settings-setup.sql script in your Supabase SQL editor to create the required tables.');
+      } else {
+        setError(error?.message || 'Failed to fetch settings. Please check your Supabase connection.');
+      }
     } finally {
       setLoading(false);
     }
@@ -76,6 +82,7 @@ const SettingsComponent = () => {
         value
       }
     }));
+    setHasChanges(true);
   };
 
   const saveSettings = async () => {
@@ -96,6 +103,7 @@ const SettingsComponent = () => {
 
       if (error) throw error;
 
+      setHasChanges(false);
       setSuccess('Settings saved successfully!');
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
@@ -181,7 +189,7 @@ return (
           <UserProfileManager />
         </TabsContent>
 
-        {categories.map(category => (
+        {categories.filter(cat => cat.id !== 'profile').map(category => (
           <TabsContent key={category.id} value={category.id} className="space-y-6">
             <Card className="bg-slate-800/50 border-slate-700">
               <CardHeader>
@@ -191,24 +199,59 @@ return (
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                {getSettingsByCategory(category.id).map(setting => (
-                  <div key={setting.key} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor={setting.key} className="text-white">
-                        {setting.key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                      </Label>
-                      {setting.is_public && (
-                        <Badge variant="outline" className="text-xs">
-                          Public
-                        </Badge>
-                      )}
-                    </div>
-                    {renderSettingField(setting)}
-                    {setting.description && (
-                      <p className="text-sm text-gray-400">{setting.description}</p>
-                    )}
+                {error && (
+                  <div className="bg-red-500/20 border border-red-500 text-red-400 p-3 rounded-lg">
+                    {error}
                   </div>
-                ))}
+                )}
+                {success && (
+                  <div className="bg-green-500/20 border border-green-500 text-green-400 p-3 rounded-lg">
+                    {success}
+                  </div>
+                )}
+                {getSettingsByCategory(category.id).length > 0 ? (
+                  <>
+                    {getSettingsByCategory(category.id).map(setting => (
+                      <div key={setting.key} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor={setting.key} className="text-white">
+                            {setting.key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                          </Label>
+                          {setting.is_public && (
+                            <Badge variant="outline" className="text-xs">
+                              Public
+                            </Badge>
+                          )}
+                        </div>
+                        {renderSettingField(setting)}
+                        {setting.description && (
+                          <p className="text-sm text-gray-400">{setting.description}</p>
+                        )}
+                      </div>
+                    ))}
+                    <div className="flex justify-end pt-4 border-t border-slate-700">
+                      <Button
+                        onClick={saveSettings}
+                        disabled={saving || !hasChanges}
+                        className="bg-blue-600 hover:bg-blue-700"
+                      >
+                        {saving ? (
+                          <>
+                            <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                            Saving...
+                          </>
+                        ) : (
+                          <>
+                            <Save className="h-4 w-4 mr-2" />
+                            Save Settings
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <p className="text-gray-400">No settings found for this category.</p>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

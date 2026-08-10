@@ -1,26 +1,36 @@
 import { useState, useEffect } from 'react';
+import { useLocation, useParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Edit, Trash2, Image as ImageIcon, FolderOpen } from 'lucide-react';
+import { Plus, Edit, Trash2, Image as ImageIcon, Star, Eye } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import ImageGallery from './ImageGallery';
 
 interface PortfolioItem {
   id: string;
   title: string;
+  slug: string;
   description: string;
-  image_url: string;
+  content: string;
+  featured_image_url: string;
   category: string;
   client: string;
-  completion_date: string;
+  project_date: string;
   technologies: string[];
+  tags: string[];
+  project_url: string;
+  github_url: string;
+  is_featured: boolean;
+  is_published: boolean;
   created_at: string;
 }
 
 const PortfolioManagement = () => {
+  const location = useLocation();
+  const params = useParams();
   const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -28,16 +38,35 @@ const PortfolioManagement = () => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    image_url: '',
+    content: '',
+    featured_image_url: '',
     category: '',
     client: '',
-    completion_date: '',
-    technologies: ''
+    project_date: '',
+    technologies: '',
+    tags: '',
+    project_url: '',
+    github_url: '',
+    is_featured: false,
+    is_published: true
   });
 
   useEffect(() => {
     fetchPortfolioItems();
   }, []);
+
+  // Auto-open add/edit dialog based on URL
+  useEffect(() => {
+    if (location.pathname.endsWith('/new')) {
+      openAddDialog();
+    } else if (params.projectId) {
+      const item = portfolioItems.find(i => i.id === params.projectId);
+      if (item) {
+        handleEdit(item);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname, params.projectId, portfolioItems]);
 
   const fetchPortfolioItems = async () => {
     try {
@@ -59,18 +88,32 @@ const PortfolioManagement = () => {
     e.preventDefault();
     try {
       const technologies = formData.technologies.split(',').map(tech => tech.trim());
+      const tags = formData.tags.split(',').map(tag => tag.trim()).filter(Boolean);
+      const slug = formData.title
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim();
 
       if (editingItem) {
         const { error } = await supabase
           .from('portfolio_items')
           .update({
             title: formData.title,
+            slug,
             description: formData.description,
-            image_url: formData.image_url,
+            content: formData.content,
+            featured_image_url: formData.featured_image_url,
             category: formData.category,
             client: formData.client,
-            completion_date: formData.completion_date,
-            technologies
+            project_date: formData.project_date,
+            technologies,
+            tags,
+            project_url: formData.project_url,
+            github_url: formData.github_url,
+            is_featured: formData.is_featured,
+            is_published: formData.is_published
           })
           .eq('id', editingItem.id);
 
@@ -80,12 +123,19 @@ const PortfolioManagement = () => {
           .from('portfolio_items')
           .insert([{
             title: formData.title,
+            slug,
             description: formData.description,
-            image_url: formData.image_url,
+            content: formData.content,
+            featured_image_url: formData.featured_image_url,
             category: formData.category,
             client: formData.client,
-            completion_date: formData.completion_date,
-            technologies
+            project_date: formData.project_date,
+            technologies,
+            tags,
+            project_url: formData.project_url,
+            github_url: formData.github_url,
+            is_featured: formData.is_featured,
+            is_published: formData.is_published
           }]);
 
         if (error) throw error;
@@ -105,11 +155,17 @@ const PortfolioManagement = () => {
     setFormData({
       title: item.title,
       description: item.description,
-      image_url: item.image_url,
+      content: item.content,
+      featured_image_url: item.featured_image_url,
       category: item.category,
       client: item.client,
-      completion_date: item.completion_date,
-      technologies: item.technologies.join(', ')
+      project_date: item.project_date,
+      technologies: item.technologies.join(', '),
+      tags: (item.tags || []).join(', '),
+      project_url: item.project_url || '',
+      github_url: item.github_url || '',
+      is_featured: item.is_featured || false,
+      is_published: item.is_published !== false
     });
     setIsDialogOpen(true);
   };
@@ -134,11 +190,17 @@ const PortfolioManagement = () => {
     setFormData({
       title: '',
       description: '',
-      image_url: '',
+      content: '',
+      featured_image_url: '',
       category: '',
       client: '',
-      completion_date: '',
-      technologies: ''
+      project_date: '',
+      technologies: '',
+      tags: '',
+      project_url: '',
+      github_url: '',
+      is_featured: false,
+      is_published: true
     });
   };
 
@@ -206,6 +268,18 @@ const PortfolioManagement = () => {
                 />
               </div>
 
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Content</label>
+                <Textarea
+                  value={formData.content}
+                  onChange={(e) => setFormData({...formData, content: e.target.value})}
+                  className="bg-slate-700 border-slate-600 text-white"
+                  rows={5}
+                  placeholder="Full project details"
+                  required
+                />
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-1">Client</label>
@@ -217,11 +291,11 @@ const PortfolioManagement = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">Completion Date</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Project Date</label>
                   <Input
                     type="date"
-                    value={formData.completion_date}
-                    onChange={(e) => setFormData({...formData, completion_date: e.target.value})}
+                    value={formData.project_date}
+                    onChange={(e) => setFormData({...formData, project_date: e.target.value})}
                     className="bg-slate-700 border-slate-600 text-white"
                     required
                   />
@@ -229,10 +303,10 @@ const PortfolioManagement = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Image URL</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Featured Image URL</label>
                 <Input
-                  value={formData.image_url}
-                  onChange={(e) => setFormData({...formData, image_url: e.target.value})}
+                  value={formData.featured_image_url}
+                  onChange={(e) => setFormData({...formData, featured_image_url: e.target.value})}
                   className="bg-slate-700 border-slate-600 text-white"
                   placeholder="https://example.com/image.jpg"
                   required
@@ -248,6 +322,64 @@ const PortfolioManagement = () => {
                   placeholder="Drone X7, GIS Software, Photogrammetry (comma-separated)"
                   required
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Tags</label>
+                <Input
+                  value={formData.tags}
+                  onChange={(e) => setFormData({...formData, tags: e.target.value})}
+                  className="bg-slate-700 border-slate-600 text-white"
+                  placeholder="Urban Planning, Crop Health, 3D Modeling (comma-separated)"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Project URL</label>
+                  <Input
+                    value={formData.project_url}
+                    onChange={(e) => setFormData({...formData, project_url: e.target.value})}
+                    className="bg-slate-700 border-slate-600 text-white"
+                    placeholder="https://live-project.com"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">GitHub URL</label>
+                  <Input
+                    value={formData.github_url}
+                    onChange={(e) => setFormData({...formData, github_url: e.target.value})}
+                    className="bg-slate-700 border-slate-600 text-white"
+                    placeholder="https://github.com/project"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.is_featured}
+                    onChange={(e) => setFormData({...formData, is_featured: e.target.checked})}
+                    className="w-4 h-4 text-blue-600 bg-slate-700 border-slate-600 rounded"
+                  />
+                  <span className="text-sm font-medium text-gray-300 flex items-center">
+                    <Star className="h-4 w-4 mr-1 text-yellow-400" />
+                    Featured Project
+                  </span>
+                </label>
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.is_published}
+                    onChange={(e) => setFormData({...formData, is_published: e.target.checked})}
+                    className="w-4 h-4 text-blue-600 bg-slate-700 border-slate-600 rounded"
+                  />
+                  <span className="text-sm font-medium text-gray-300 flex items-center">
+                    <Eye className="h-4 w-4 mr-1 text-green-400" />
+                    Published
+                  </span>
+                </label>
               </div>
 
               <div className="flex justify-end space-x-2 pt-4">
@@ -275,7 +407,19 @@ const PortfolioManagement = () => {
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   <CardTitle className="text-white text-lg">{item.title}</CardTitle>
-                  <p className="text-sm text-gray-400 mt-1">{item.category}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <p className="text-sm text-gray-400">{item.category}</p>
+                    {item.is_featured && (
+                      <span className="inline-flex items-center px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs rounded">
+                        <Star className="h-3 w-3 mr-1" /> Featured
+                      </span>
+                    )}
+                    {item.is_published === false && (
+                      <span className="inline-flex items-center px-2 py-0.5 bg-red-500/20 text-red-400 text-xs rounded">
+                        <Eye className="h-3 w-3 mr-1" /> Draft
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <div className="flex space-x-2">
                   <Button
@@ -300,9 +444,9 @@ const PortfolioManagement = () => {
             <CardContent>
               <div className="space-y-3">
                 <div className="aspect-video bg-slate-700 rounded-lg flex items-center justify-center">
-                  {item.image_url ? (
+                  {item.featured_image_url ? (
                     <img
-                      src={item.image_url}
+                      src={item.featured_image_url}
                       alt={item.title}
                       className="w-full h-full object-cover rounded-lg"
                     />
@@ -313,7 +457,7 @@ const PortfolioManagement = () => {
                 <p className="text-sm text-gray-300 line-clamp-2">{item.description}</p>
                 <div className="flex justify-between text-xs text-gray-400">
                   <span>Client: {item.client}</span>
-                  <span>{new Date(item.completion_date).toLocaleDateString()}</span>
+                  <span>{new Date(item.project_date).toLocaleDateString()}</span>
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {item.technologies.slice(0, 3).map((tech, index) => (

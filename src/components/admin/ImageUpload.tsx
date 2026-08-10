@@ -1,8 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -11,7 +9,6 @@ import {
   X, 
   Image as ImageIcon, 
   File, 
-  Check, 
   AlertCircle,
   Loader2,
   Trash2,
@@ -21,6 +18,7 @@ import {
 import { supabase } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
 import { watermarkImage, WatermarkOptions } from '@/utils/imageWatermarker';
+import { compressImage, CompressionOptions, formatFileSize as formatSize } from '@/utils/imageCompressor';
 
 interface UploadedFile {
   id: string;
@@ -43,6 +41,8 @@ interface ImageUploadProps {
   className?: string;
   enableWatermark?: boolean;
   watermarkOptions?: WatermarkOptions;
+  enableCompression?: boolean;
+  compressionOptions?: CompressionOptions;
 }
 
 const ImageUpload = ({
@@ -62,6 +62,14 @@ const ImageUpload = ({
     scale: 0.15,
     margin: 20
   },
+  enableCompression = true,
+  compressionOptions = {
+    maxWidth: 1920,
+    maxHeight: 1920,
+    quality: 0.8,
+    format: 'webp',
+    preserveOrientation: true
+  },
   className
 }: ImageUploadProps) => {
   const [files, setFiles] = useState<File[]>([]);
@@ -70,6 +78,7 @@ const ImageUpload = ({
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
   const [error, setError] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
+  const [compressionInfo, setCompressionInfo] = useState<Record<string, { original: number; compressed: number; savings: number }>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const formatFileSize = (bytes: number) => {
@@ -132,11 +141,32 @@ const ImageUpload = ({
   };
 
   const uploadFile = async (file: File): Promise<UploadedFile> => {
-    // Apply watermark if enabled and it's an image
+    // Compress image first if enabled
     let fileToUpload = file;
-    if (enableWatermark && file.type.startsWith('image/')) {
+    if (enableCompression && file.type.startsWith('image/')) {
       try {
-        fileToUpload = await watermarkImage(file, watermarkOptions);
+        const result = await compressImage(file, compressionOptions);
+        fileToUpload = result.file;
+        
+        if (result.wasCompressed) {
+          setCompressionInfo(prev => ({
+            ...prev,
+            [file.name]: {
+              original: result.originalSize,
+              compressed: result.compressedSize,
+              savings: result.savingsPercent
+            }
+          }));
+        }
+      } catch (compressError) {
+        console.warn('Compression failed, using original file:', compressError);
+      }
+    }
+
+    // Apply watermark if enabled and it's an image
+    if (enableWatermark && fileToUpload.type.startsWith('image/')) {
+      try {
+        fileToUpload = await watermarkImage(fileToUpload, watermarkOptions);
       } catch (watermarkError) {
         console.warn('Watermark failed, uploading original file:', watermarkError);
       }
@@ -283,6 +313,11 @@ const ImageUpload = ({
             <p className="text-gray-400 text-sm">
               Maximum {maxFiles} files • {maxFileSize}MB each • {acceptedTypes.join(', ')}
             </p>
+            {enableCompression && (
+              <p className="text-green-400 text-xs mt-2">
+                Auto-compression enabled: images will be optimized to save storage
+              </p>
+            )}
           </div>
 
           {error && (
@@ -302,32 +337,42 @@ const ImageUpload = ({
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {files.map((file, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    {getFileIcon(file)}
-                    <div>
-                      <p className="text-white text-sm font-medium">{file.name}</p>
-                      <p className="text-gray-400 text-xs">{formatFileSize(file.size)}</p>
+              {files.map((file, index) => {
+                const info = compressionInfo[file.name];
+                return (
+                  <div key={index} className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      {getFileIcon(file)}
+                      <div>
+                        <p className="text-white text-sm font-medium">{file.name}</p>
+                        <p className="text-gray-400 text-xs">
+                          {formatFileSize(file.size)}
+                          {info && (
+                            <span className="text-green-400 ml-2">
+                              → {formatSize(info.compressed)} ({info.savings}% saved)
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      {uploadProgress[file.name] && (
+                        <div className="w-20">
+                          <Progress value={uploadProgress[file.name]} className="h-2" />
+                        </div>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => removeFile(index)}
+                        className="h-8 w-8 p-0 text-red-400 hover:text-red-300"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    {uploadProgress[file.name] && (
-                      <div className="w-20">
-                        <Progress value={uploadProgress[file.name]} className="h-2" />
-                      </div>
-                    )}
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => removeFile(index)}
-                      className="h-8 w-8 p-0 text-red-400 hover:text-red-300"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <div className="mt-4 flex justify-end">

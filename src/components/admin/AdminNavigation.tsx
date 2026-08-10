@@ -6,7 +6,12 @@ import {
   FileText, 
   Images,
   Plus,
-  Upload
+  Upload,
+  FolderOpen,
+  Users,
+  User,
+  BarChart3,
+  Settings
 } from 'lucide-react';
 
 interface NavAction {
@@ -39,94 +44,97 @@ const AdminNavigation = ({
 
   const navItems: NavItem[] = [
     {
+      label: 'Dashboard',
+      href: '/admin/dashboard',
+      icon: <BarChart3 className="h-4 w-4" />,
+      description: 'Admin dashboard'
+    },
+    {
       label: 'Blog',
-      href: '/admin/blog',
+      href: '/admin/dashboard/blog',
       icon: <FileText className="h-4 w-4" />,
       description: 'Manage blog posts',
       actions: [
         {
           label: 'New Post',
-          href: '/admin/blog/new',
+          href: '/admin/dashboard/blog/new',
           icon: <Plus className="h-3 w-3" />
         }
       ]
     },
     {
       label: 'Images',
-      href: '/admin/images',
+      href: '/admin/dashboard/images',
       icon: <Images className="h-4 w-4" />,
       description: 'Manage image gallery',
       actions: [
         {
           label: 'Upload Images',
-          href: '/admin/images/upload',
+          href: '/admin/dashboard/images/upload',
           icon: <Upload className="h-3 w-3" />
         }
       ]
-    }
-    // TODO: Build later - Portfolio, Team, Authors, Analytics, Settings
-    /*
+    },
     {
       label: 'Portfolio',
-      href: '/admin/portfolio',
+      href: '/admin/dashboard/portfolio',
       icon: <FolderOpen className="h-4 w-4" />,
       description: 'Manage portfolio projects',
       actions: [
         {
           label: 'Add Project',
-          href: '/admin/portfolio/new',
+          href: '/admin/dashboard/portfolio/new',
           icon: <Plus className="h-3 w-3" />
         },
         {
           label: 'Upload Images',
-          href: '/admin/portfolio/upload',
+          href: '/admin/dashboard/portfolio/upload',
           icon: <Upload className="h-3 w-3" />
         }
       ]
     },
     {
       label: 'Team',
-      href: '/admin/team',
+      href: '/admin/dashboard/team',
       icon: <Users className="h-4 w-4" />,
       description: 'Manage team members',
       actions: [
         {
           label: 'Add Member',
-          href: '/admin/team/new',
+          href: '/admin/dashboard/team/new',
           icon: <Plus className="h-3 w-3" />
         }
       ]
     },
     {
       label: 'Authors',
-      href: '/admin/authors',
+      href: '/admin/dashboard/authors',
       icon: <User className="h-4 w-4" />,
       description: 'Manage blog authors',
       actions: [
         {
           label: 'Add Author',
-          href: '/admin/authors/new',
+          href: '/admin/dashboard/authors/new',
           icon: <Plus className="h-3 w-3" />
         }
       ]
     },
     {
       label: 'Analytics',
-      href: '/admin/analytics',
+      href: '/admin/dashboard/analytics',
       icon: <BarChart3 className="h-4 w-4" />,
       description: 'View analytics'
     },
     {
       label: 'Settings',
-      href: '/admin/settings',
+      href: '/admin/dashboard/settings',
       icon: <Settings className="h-4 w-4" />,
       description: 'Site settings'
     }
-    */
   ];
 
   const isActive = (href: string) => {
-    if (href === '/admin') {
+    if (href === '/admin/dashboard') {
       return location.pathname === href;
     }
     return location.pathname.startsWith(href);

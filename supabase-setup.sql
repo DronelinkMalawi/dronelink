@@ -10,10 +10,12 @@ CREATE INDEX IF NOT EXISTS idx_portfolio_items_created_at ON portfolio_items(cre
 ALTER TABLE portfolio_items ENABLE ROW LEVEL SECURITY;
 
 -- Create policy for public read access
+DROP POLICY IF EXISTS "Allow public read access on portfolio_items" ON portfolio_items;
 CREATE POLICY "Allow public read access on portfolio_items" ON portfolio_items
   FOR SELECT USING (true);
 
 -- Create policy for authenticated users to manage portfolio items
+DROP POLICY IF EXISTS "Allow authenticated users to manage portfolio_items" ON portfolio_items;
 CREATE POLICY "Allow authenticated users to manage portfolio_items" ON portfolio_items
   FOR ALL USING (auth.role() = 'authenticated');
 
@@ -27,6 +29,7 @@ END;
 $$ language 'plpgsql';
 
 -- Create trigger to automatically update updated_at
+DROP TRIGGER IF EXISTS update_portfolio_items_updated_at ON portfolio_items;
 CREATE TRIGGER update_portfolio_items_updated_at
   BEFORE UPDATE ON portfolio_items
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

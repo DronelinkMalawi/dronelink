@@ -60,7 +60,15 @@ const Analytics = () => {
       setDailyData(dailyDataResult || []);
     } catch (err) {
       console.error('Error fetching analytics:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch analytics');
+      const error = err as { code?: string; message?: string };
+      // Check if the RPC function doesn't exist
+      if (error?.code === 'PGRST202' || error?.message?.includes('Could not find the function')) {
+        setError('Analytics functions not found. Please run the analytics-setup.sql script in your Supabase SQL editor to create the required database functions.');
+      } else if (error?.code === '42P01' || error?.message?.includes('relation') || error?.message?.includes('does not exist')) {
+        setError('Analytics table not found. Please run the analytics-setup.sql script in your Supabase SQL editor to create the required tables.');
+      } else {
+        setError(error?.message || 'Failed to fetch analytics. Please check your Supabase connection.');
+      }
     } finally {
       setLoading(false);
     }
@@ -68,6 +76,7 @@ const Analytics = () => {
 
   useEffect(() => {
     fetchAnalytics();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dateRange]);
 
   const formatNumber = (num: number) => {

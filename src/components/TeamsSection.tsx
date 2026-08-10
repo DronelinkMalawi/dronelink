@@ -12,10 +12,23 @@ import teamPilot from '@/assets/team-pilot.jpg';
 import teamDev from '@/assets/team-dev.jpg';
 import teamMarketing from '@/assets/team-marketing.jpg';
 
-const TeamsSection = () => {
-  const [selectedMember, setSelectedMember] = useState<any>(null);
+interface TeamMember {
+  name: string;
+  role: string;
+  image: string;
+  bio: string;
+  expertise: string[];
+  social: {
+    linkedin: string;
+    email: string;
+    twitter: string;
+  };
+}
 
-  const teamMembers = [
+const TeamsSection = () => {
+  const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
+
+  const teamMembers: TeamMember[] = [
     {
       name: 'Rachel Kaunda',
       role: 'Chief Executive Officer',
@@ -68,7 +81,7 @@ const TeamsSection = () => {
     },
   ];
 
-  const handleMemberClick = (member: any) => {
+  const handleMemberClick = (member: TeamMember) => {
     setSelectedMember(member);
     document.body.style.overflow = 'hidden';
   };

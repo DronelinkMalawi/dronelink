@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation, useParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Plus, Edit, Trash2, Image as ImageIcon, Calendar, User, Eye, Tag, FileText, Search, Filter, FolderOpen } from 'lucide-react';
+import { Plus, Edit, Trash2, X, Image as ImageIcon, Calendar, User, Eye, FileText, Search, Filter, FolderOpen } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import ImageGallery from './ImageGallery';
@@ -61,6 +62,8 @@ interface BlogPost {
 
 const BlogManagement = () => {
   const { user } = useAuth();
+  const location = useLocation();
+  const params = useParams();
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [authors, setAuthors] = useState<Author[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -72,7 +75,6 @@ const BlogManagement = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [currentUserAuthor, setCurrentUserAuthor] = useState<Author | null>(null);
-  const [isImageGalleryOpen, setIsImageGalleryOpen] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     excerpt: '',
@@ -90,7 +92,37 @@ const BlogManagement = () => {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Auto-open add/edit dialog based on URL
+  useEffect(() => {
+    if (location.pathname.endsWith('/new')) {
+      // Navigated to add new post page - open the dialog
+      setEditingPost(null);
+      setFormData({
+        title: '',
+        excerpt: '',
+        content: '',
+        featured_image_url: '',
+        author_id: currentUserAuthor?.id || '',
+        category_id: '',
+        status: 'draft',
+        meta_title: '',
+        meta_description: '',
+        reading_time_minutes: 5,
+        is_featured: false,
+        tags: []
+      });
+      setIsDialogOpen(true);
+    } else if (params.postId) {
+      // Navigated to edit post page - find and load the post
+      const post = blogPosts.find(p => p.id === params.postId);
+      if (post) {
+        handleEdit(post);
+      }
+    }
+  }, [location.pathname, params.postId, blogPosts, currentUserAuthor]);
 
   const fetchData = async () => {
     try {
@@ -124,7 +156,27 @@ const BlogManagement = () => {
       if (categoriesRes.error) throw categoriesRes.error;
       if (tagsRes.error) throw tagsRes.error;
 
-      setBlogPosts(postsRes.data || []);
+      // Map the view data to include nested author/category objects
+      const mappedPosts = (postsRes.data || []).map((post) => ({
+        ...post,
+        author: post.author_name ? {
+          id: post.author_id,
+          name: post.author_name,
+          email: post.author_email,
+          bio: post.author_bio,
+          profile_image_url: post.author_profile_image,
+          is_active: true
+        } : undefined,
+        category: post.category_name ? {
+          id: post.category_id,
+          name: post.category_name,
+          slug: post.category_slug,
+          color: post.category_color || '#3B82F6'
+        } : undefined,
+        tags: Array.isArray(post.tags) ? post.tags : []
+      })) as BlogPost[];
+
+      setBlogPosts(mappedPosts);
       setAuthors(authorsRes.data || []);
       setCategories(categoriesRes.data || []);
       setTags(tagsRes.data || []);
@@ -220,15 +272,15 @@ const BlogManagement = () => {
         postId = data[0].id;
       }
 
-      // Handle tags
-      if (formData.tags.length > 0) {
-        // Delete existing tag relationships
-        await supabase
-          .from('blog_post_tags')
-          .delete()
-          .eq('post_id', postId);
+      // Handle tags - always delete existing then re-insert if any selected
+      // Delete existing tag relationships
+      await supabase
+        .from('blog_post_tags')
+        .delete()
+        .eq('post_id', postId);
 
-        // Insert new tag relationships
+      // Insert new tag relationships if any tags selected
+      if (formData.tags.length > 0) {
         const tagRelations = formData.tags.map(tagId => ({
           post_id: postId,
           tag_id: tagId

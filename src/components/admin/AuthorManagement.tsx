@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation, useParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -29,6 +30,8 @@ interface Author {
 }
 
 const AuthorManagement = () => {
+  const location = useLocation();
+  const params = useParams();
   const [authors, setAuthors] = useState<Author[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -56,6 +59,19 @@ const AuthorManagement = () => {
   useEffect(() => {
     fetchAuthors();
   }, []);
+
+  // Auto-open add/edit dialog based on URL
+  useEffect(() => {
+    if (location.pathname.endsWith('/new')) {
+      openAddDialog();
+    } else if (params.authorId) {
+      const author = authors.find(a => a.id === params.authorId);
+      if (author) {
+        handleEdit(author);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname, params.authorId, authors]);
 
   const fetchAuthors = async () => {
     try {

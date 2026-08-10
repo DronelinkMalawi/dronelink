@@ -59,7 +59,12 @@ export const TeamProvider = ({ children }: { children: ReactNode }) => {
       setTeamMembers(data || []);
     } catch (err) {
       console.error('Error fetching team members:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch team members');
+      const error = err as { code?: string; message?: string };
+      if (error?.code === '42P01' || error?.message?.includes('relation') || error?.message?.includes('does not exist')) {
+        setError('Team members table not found. Please run the team-setup.sql script in your Supabase SQL editor to create the required tables.');
+      } else {
+        setError(error?.message || 'Failed to fetch team members. Please check your Supabase connection.');
+      }
     } finally {
       setLoading(false);
     }

@@ -7,6 +7,7 @@ import droneImage1003 from '@/assets/1001191220.jpg';
 import droneImage1004 from '@/assets/1001262415.jpg';
 import AboutSection from '@/components/AboutSection';
 import TeamsSection from '@/components/TeamsSection';
+import PortfolioShowcase from '@/components/PortfolioShowcase';
 import ServicesSection from '@/components/ServicesSection';
 import TestimonialSection from '@/components/TestimonialSection';
 import ContactSection from '@/components/ContactSection';
@@ -108,6 +109,7 @@ const Index = () => {
       </div>
       <PartnersSection/>
       <TeamsSection />
+      <PortfolioShowcase />
       <div id="services">
         <ServicesSection />
       </div>

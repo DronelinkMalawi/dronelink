@@ -27,13 +27,49 @@ CREATE TABLE IF NOT EXISTS portfolio_items (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Add any missing columns if the table already exists
+-- This handles the case where the portfolio_items table already exists with a simpler schema
+ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS slug VARCHAR(255);
+ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS content TEXT;
+ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS featured_image_url VARCHAR(500);
+ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS project_date DATE;
+ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS is_published BOOLEAN DEFAULT true;
+ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS is_featured BOOLEAN DEFAULT false;
+ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS sort_order INTEGER DEFAULT 0;
+ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS meta_title VARCHAR(255);
+ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS meta_description TEXT;
+ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS view_count INTEGER DEFAULT 0;
+ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS images JSONB DEFAULT '[]';
+ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS tags TEXT[] DEFAULT '{}';
+ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS technologies TEXT[] DEFAULT '{}';
+ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS project_url VARCHAR(500);
+ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS github_url VARCHAR(500);
+ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+
+-- Drop old columns from the original schema that are replaced by the admin schema
+-- image_url column has NOT NULL constraint that violates inserts - drop it
+ALTER TABLE portfolio_items DROP COLUMN IF EXISTS image_url;
+-- completion_date was the old date column - replaced by project_date
+ALTER TABLE portfolio_items DROP COLUMN IF EXISTS completion_date;
+-- Make client nullable since the admin doesn't always require it
+ALTER TABLE portfolio_items ALTER COLUMN client DROP NOT NULL;
+
+-- Drop any existing partial unique index on slug (it doesn't work with ON CONFLICT)
+DROP INDEX IF EXISTS idx_portfolio_items_slug;
+
+-- Add a proper UNIQUE constraint on slug for ON CONFLICT to work
+ALTER TABLE portfolio_items DROP CONSTRAINT IF EXISTS portfolio_items_slug_key;
+ALTER TABLE portfolio_items ADD CONSTRAINT portfolio_items_slug_key UNIQUE (slug);
+
 -- Enable Row Level Security (RLS) on portfolio_items table
 ALTER TABLE portfolio_items ENABLE ROW LEVEL SECURITY;
 
 -- Portfolio items table policies
+DROP POLICY IF EXISTS "Allow public read access on published portfolio_items" ON portfolio_items;
 CREATE POLICY "Allow public read access on published portfolio_items" ON portfolio_items
   FOR SELECT USING (is_published = true);
 
+DROP POLICY IF EXISTS "Allow authenticated users to manage portfolio_items" ON portfolio_items;
 CREATE POLICY "Allow authenticated users to manage portfolio_items" ON portfolio_items
   FOR ALL USING (auth.role() = 'authenticated');
 
@@ -47,6 +83,7 @@ CREATE INDEX IF NOT EXISTS idx_portfolio_items_project_date ON portfolio_items(p
 CREATE INDEX IF NOT EXISTS idx_portfolio_items_created_at ON portfolio_items(created_at DESC);
 
 -- Create trigger to automatically update updated_at
+DROP TRIGGER IF EXISTS update_portfolio_items_updated_at ON portfolio_items;
 CREATE TRIGGER update_portfolio_items_updated_at
   BEFORE UPDATE ON portfolio_items
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -73,10 +110,4 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Insert sample portfolio categories (optional)
--- These can be used for categorization in the admin panel
-INSERT INTO portfolio_items (title, slug, description, content, category, project_date, is_featured, technologies) VALUES
-  ('Agricultural Drone Survey', 'agricultural-drone-survey', 'Precision agriculture mapping using drone technology', 'Comprehensive survey of 500-acre farm using multispectral imaging to identify crop health issues and optimize irrigation.', 'Agriculture', '2024-03-15', true, ARRAY['DJI Phantom 4', 'Multispectral Imaging', 'GIS Mapping']),
-  ('Construction Site Monitoring', 'construction-site-monitoring', 'Weekly progress documentation for commercial construction', 'Weekly aerial monitoring of 12-month construction project with 3D mapping and volume calculations for earthworks.', 'Construction', '2024-02-20', true, ARRAY['DJI Matrice 300', 'Photogrammetry', '3D Modeling']),
-  ('Real Estate Photography', 'real-estate-photography', 'Aerial photography for luxury property marketing', 'Complete aerial photography package for high-end residential property including twilight shots and neighborhood overview.', 'Real Estate', '2024-01-10', false, ARRAY['DJI Mavic 3', 'HDR Photography', 'Video Editing'])
-ON CONFLICT (slug) DO NOTHING;
+-- No sample data inserted - portfolio items are added through the admin panel

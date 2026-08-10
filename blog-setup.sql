@@ -81,46 +81,58 @@ ALTER TABLE blog_post_tags ENABLE ROW LEVEL SECURITY;
 ALTER TABLE blog_analytics ENABLE ROW LEVEL SECURITY;
 
 -- Authors table policies
+DROP POLICY IF EXISTS "Allow public read access on authors" ON authors;
 CREATE POLICY "Allow public read access on authors" ON authors
   FOR SELECT USING (is_active = true);
 
+DROP POLICY IF EXISTS "Allow authenticated users to manage authors" ON authors;
 CREATE POLICY "Allow authenticated users to manage authors" ON authors
   FOR ALL USING (auth.role() = 'authenticated');
 
 -- Blog categories policies
+DROP POLICY IF EXISTS "Allow public read access on blog_categories" ON blog_categories;
 CREATE POLICY "Allow public read access on blog_categories" ON blog_categories
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Allow authenticated users to manage blog_categories" ON blog_categories;
 CREATE POLICY "Allow authenticated users to manage blog_categories" ON blog_categories
   FOR ALL USING (auth.role() = 'authenticated');
 
 -- Blog tags policies
+DROP POLICY IF EXISTS "Allow public read access on blog_tags" ON blog_tags;
 CREATE POLICY "Allow public read access on blog_tags" ON blog_tags
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Allow authenticated users to manage blog_tags" ON blog_tags;
 CREATE POLICY "Allow authenticated users to manage blog_tags" ON blog_tags
   FOR ALL USING (auth.role() = 'authenticated');
 
 -- Blog posts policies
+DROP POLICY IF EXISTS "Allow public read access on published blog_posts" ON blog_posts;
 CREATE POLICY "Allow public read access on published blog_posts" ON blog_posts
   FOR SELECT USING (status = 'published');
 
+DROP POLICY IF EXISTS "Allow authenticated users to manage blog_posts" ON blog_posts;
 CREATE POLICY "Allow authenticated users to manage blog_posts" ON blog_posts
   FOR ALL USING (auth.role() = 'authenticated');
 
 -- Blog post tags policies
+DROP POLICY IF EXISTS "Allow public read access on blog_post_tags" ON blog_post_tags;
 CREATE POLICY "Allow public read access on blog_post_tags" ON blog_post_tags
   FOR SELECT USING (
     EXISTS (SELECT 1 FROM blog_posts WHERE blog_posts.id = post_id AND blog_posts.status = 'published')
   );
 
+DROP POLICY IF EXISTS "Allow authenticated users to manage blog_post_tags" ON blog_post_tags;
 CREATE POLICY "Allow authenticated users to manage blog_post_tags" ON blog_post_tags
   FOR ALL USING (auth.role() = 'authenticated');
 
 -- Blog analytics policies
+DROP POLICY IF EXISTS "Allow public insert access on blog_analytics" ON blog_analytics;
 CREATE POLICY "Allow public insert access on blog_analytics" ON blog_analytics
   FOR INSERT WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Allow authenticated users to read blog_analytics" ON blog_analytics;
 CREATE POLICY "Allow authenticated users to read blog_analytics" ON blog_analytics
   FOR SELECT USING (auth.role() = 'authenticated');
 
@@ -156,10 +168,12 @@ END;
 $$ language 'plpgsql';
 
 -- Create triggers to automatically update updated_at
+DROP TRIGGER IF EXISTS update_authors_updated_at ON authors;
 CREATE TRIGGER update_authors_updated_at
   BEFORE UPDATE ON authors
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_blog_posts_updated_at ON blog_posts;
 CREATE TRIGGER update_blog_posts_updated_at
   BEFORE UPDATE ON blog_posts
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -179,14 +193,21 @@ DECLARE
   base_slug TEXT;
   slug TEXT;
   counter INTEGER := 1;
+  slug_exists BOOLEAN;
 BEGIN
   base_slug := lower(regexp_replace(title, '[^a-zA-Z0-9\s]', '', 'g'));
   base_slug := regexp_replace(base_slug, '\s+', '-', 'g');
   
   slug := base_slug;
   
-  WHILE EXISTS (SELECT 1 FROM pg_tables WHERE tablename = table_name AND 
-                EXISTS (SELECT 1 FROM EXECUTE format('SELECT 1 FROM %I WHERE slug = $1', table_name) WHERE slug = slug)) LOOP
+  LOOP
+    -- Check if the slug already exists in the specified table
+    EXECUTE format('SELECT EXISTS (SELECT 1 FROM %I WHERE slug = $1)', table_name)
+      INTO slug_exists
+      USING slug;
+    
+    EXIT WHEN NOT slug_exists;
+    
     slug := base_slug || '-' || counter;
     counter := counter + 1;
   END LOOP;
@@ -195,7 +216,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Insert default categories
+-- No sample data inserted - categories and tags are added through the admin panel
 INSERT INTO blog_categories (name, slug, description, color) VALUES
   ('Technology', 'technology', 'Latest in drone technology and innovation', '#3B82F6'),
   ('Industry News', 'industry-news', 'Drone industry updates and market trends', '#10B981'),

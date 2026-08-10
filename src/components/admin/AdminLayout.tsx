@@ -9,9 +9,7 @@ import AdminNavigation from './AdminNavigation';
 import Breadcrumbs from './Breadcrumbs';
 import { cn } from '@/lib/utils';
 
-interface AdminLayoutProps {}
-
-export const AdminLayout = ({}: AdminLayoutProps) => {
+export const AdminLayout = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -88,26 +86,19 @@ export const AdminLayout = ({}: AdminLayoutProps) => {
         {/* Top Bar */}
         <header className="bg-slate-800 border-b border-slate-700">
           <div className="px-4 sm:px-6 lg:px-8 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                {/* Mobile menu button */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSidebarOpen(true)}
-                  className="lg:hidden text-gray-400 hover:text-white"
-                >
-                  <Menu className="h-4 w-4" />
-                </Button>
+            <div className="flex items-center space-x-4">
+              {/* Mobile menu button */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSidebarOpen(true)}
+                className="lg:hidden text-gray-400 hover:text-white"
+              >
+                <Menu className="h-4 w-4" />
+              </Button>
 
-                {/* Breadcrumbs */}
-                <Breadcrumbs />
-              </div>
-
-              {/* Horizontal Navigation for desktop */}
-              <div className="hidden lg:block">
-                <AdminNavigation orientation="horizontal" showActions={false} />
-              </div>
+              {/* Breadcrumbs */}
+              <Breadcrumbs />
             </div>
           </div>
         </header>

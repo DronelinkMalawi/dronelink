@@ -26,16 +26,16 @@ const Breadcrumbs = ({
   const generateBreadcrumbs = (): BreadcrumbItem[] => {
     const pathSegments = location.pathname.split('/').filter(Boolean);
     const breadcrumbs: BreadcrumbItem[] = [
-      { label: 'Dashboard', href: '/admin', icon: <Home className="h-4 w-4" /> }
+      { label: 'Dashboard', href: '/admin/dashboard', icon: <Home className="h-4 w-4" /> }
     ];
 
     if (pathSegments.length === 0 || (pathSegments.length === 1 && pathSegments[0] === 'admin')) {
       return breadcrumbs;
     }
 
-    // Skip 'admin' segment if present
-    const startIndex = pathSegments[0] === 'admin' ? 1 : 0;
-    let currentPath = '/admin';
+    // Skip 'admin' and 'dashboard' segments if present
+    const startIndex = pathSegments[0] === 'admin' ? (pathSegments[1] === 'dashboard' ? 2 : 1) : 0;
+    let currentPath = '/admin/dashboard';
 
     for (let i = startIndex; i < pathSegments.length; i++) {
       const segment = pathSegments[i];

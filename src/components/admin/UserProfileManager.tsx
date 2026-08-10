@@ -61,6 +61,7 @@ const UserProfileManager = () => {
     if (user) {
       fetchUserProfile();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const fetchUserProfile = async () => {
@@ -96,7 +97,12 @@ const UserProfileManager = () => {
       }
     } catch (err) {
       console.error('Error fetching user profile:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch profile');
+      const error = err as { code?: string; message?: string };
+      if (error?.code === '42P01' || error?.message?.includes('relation') || error?.message?.includes('does not exist')) {
+        setError('Authors table not found. Please run the blog-setup.sql script in your Supabase SQL editor to create the required tables.');
+      } else {
+        setError(error?.message || 'Failed to fetch profile. Please check your Supabase connection.');
+      }
     } finally {
       setLoading(false);
     }

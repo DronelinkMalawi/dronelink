@@ -26,9 +26,11 @@ CREATE TABLE IF NOT EXISTS team_members (
 ALTER TABLE team_members ENABLE ROW LEVEL SECURITY;
 
 -- Team members table policies
+DROP POLICY IF EXISTS "Allow public read access on active team_members" ON team_members;
 CREATE POLICY "Allow public read access on active team_members" ON team_members
   FOR SELECT USING (is_active = true);
 
+DROP POLICY IF EXISTS "Allow authenticated users to manage team_members" ON team_members;
 CREATE POLICY "Allow authenticated users to manage team_members" ON team_members
   FOR ALL USING (auth.role() = 'authenticated');
 
@@ -41,15 +43,9 @@ CREATE INDEX IF NOT EXISTS idx_team_members_sort_order ON team_members(sort_orde
 CREATE INDEX IF NOT EXISTS idx_team_members_created_at ON team_members(created_at DESC);
 
 -- Create trigger to automatically update updated_at
+DROP TRIGGER IF EXISTS update_team_members_updated_at ON team_members;
 CREATE TRIGGER update_team_members_updated_at
   BEFORE UPDATE ON team_members
-  FOR EACH ROW EXECUTE update_updated_at_column();
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- Insert default team members (if you want to migrate from hardcoded data)
--- These can be removed or modified as needed
-INSERT INTO team_members (name, email, role, bio, department, is_featured, sort_order) VALUES
-  ('Sarah Johnson', 'sarah.johnson@dronelink.com', 'Lead Pilot', 'Experienced commercial pilot with over 10 years in drone operations and aerial photography.', 'Operations', true, 1),
-  ('Michael Chen', 'michael.chen@dronelink.com', 'Data Analyst', 'Specialized in geospatial analysis and drone data processing for precision agriculture.', 'Analytics', true, 2),
-  ('Emily Rodriguez', 'emily.rodriguez@dronelink.com', 'Field Operations Manager', 'Manages field operations and ensures compliance with aviation regulations.', 'Operations', false, 3),
-  ('David Kim', 'david.kim@dronelink.com', 'Software Engineer', 'Develops custom drone software solutions and integrates third-party APIs.', 'Engineering', false, 4)
-ON CONFLICT (email) DO NOTHING;
+-- No sample data inserted - team members are added through the admin panel

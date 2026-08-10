@@ -75,6 +75,7 @@ const CategoryManager = ({ type, onCategoryChange }: CategoryManagerProps) => {
 
   useEffect(() => {
     fetchCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type]);
 
   const generateSlug = (name: string) => {

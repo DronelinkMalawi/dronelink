@@ -1,5 +1,6 @@
 -- Analytics Database Setup
 -- This SQL creates tables for tracking website analytics and user engagement
+-- Note: This is the COMPLETE script. Run the ENTIRE file at once.
 
 -- Site analytics for tracking overall metrics
 CREATE TABLE IF NOT EXISTS site_analytics (
@@ -36,13 +37,16 @@ ALTER TABLE site_analytics ENABLE ROW LEVEL SECURITY;
 ALTER TABLE monthly_analytics ENABLE ROW LEVEL SECURITY;
 
 -- Site analytics policies
+DROP POLICY IF EXISTS "Allow public insert access on site_analytics" ON site_analytics;
 CREATE POLICY "Allow public insert access on site_analytics" ON site_analytics
   FOR INSERT WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Allow authenticated users to read site_analytics" ON site_analytics;
 CREATE POLICY "Allow authenticated users to read site_analytics" ON site_analytics
   FOR SELECT USING (auth.role() = 'authenticated');
 
 -- Monthly analytics policies
+DROP POLICY IF EXISTS "Allow authenticated users to manage monthly_analytics" ON monthly_analytics;
 CREATE POLICY "Allow authenticated users to manage monthly_analytics" ON monthly_analytics
   FOR ALL USING (auth.role() = 'authenticated');
 
@@ -56,9 +60,13 @@ CREATE INDEX IF NOT EXISTS idx_monthly_analytics_year_month ON monthly_analytics
 CREATE INDEX IF NOT EXISTS idx_monthly_analytics_created_at ON monthly_analytics(created_at DESC);
 
 -- Create trigger to automatically update updated_at
+DROP TRIGGER IF EXISTS update_monthly_analytics_updated_at ON monthly_analytics;
 CREATE TRIGGER update_monthly_analytics_updated_at
   BEFORE UPDATE ON monthly_analytics
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- ==== IMPORTANT: The RPC FUNCTIONS below are what the Analytics page calls ====
+-- If you only see "Success. No rows returned" above, scroll down to ensure these ran too
 
 -- Function to get analytics summary for a date range
 CREATE OR REPLACE FUNCTION get_analytics_summary(
@@ -86,21 +94,33 @@ BEGIN
     ROUND(COUNT(*) FILTER (WHERE event_type = 'page_view')::NUMERIC / 
           GREATEST(EXTRACT(DAYS FROM end_date - start_date) + 1, 1), 2) as avg_daily_views,
     COALESCE(
-      json_agg(
-        json_build_object(
-          'page_url', page_url,
-          'views', COUNT(*)
-        ) ORDER BY COUNT(*) DESC
-      ) FILTER (WHERE page_url IS NOT NULL) LIMIT 10,
+      (
+        SELECT json_agg(page_stats)
+        FROM (
+          SELECT page_url, COUNT(*) as view_count
+          FROM site_analytics
+          WHERE created_at::DATE >= start_date AND created_at::DATE <= end_date
+            AND page_url IS NOT NULL
+          GROUP BY page_url
+          ORDER BY view_count DESC
+          LIMIT 10
+        ) page_stats
+      ),
       '[]'::json
     ) as top_pages,
     COALESCE(
-      json_agg(
-        json_build_object(
-          'referrer', referrer,
-          'views', COUNT(*)
-        ) ORDER BY COUNT(*) DESC
-      ) FILTER (WHERE referrer IS NOT NULL AND referrer != '') LIMIT 10,
+      (
+        SELECT json_agg(referrer_stats)
+        FROM (
+          SELECT referrer, COUNT(*) as view_count
+          FROM site_analytics
+          WHERE created_at::DATE >= start_date AND created_at::DATE <= end_date
+            AND referrer IS NOT NULL AND referrer != ''
+          GROUP BY referrer
+          ORDER BY view_count DESC
+          LIMIT 10
+        ) referrer_stats
+      ),
       '[]'::json
     ) as top_referrers
   FROM site_analytics

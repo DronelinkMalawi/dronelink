@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import FaviconThemeSwitcher from "@/components/FaviconThemeSwitcher";
 import Index from "./pages/Index";
@@ -22,6 +22,7 @@ import CaseStudies from "./pages/CaseStudies";
 import DiscussProject from "./pages/DiscussProject";
 import EmergencyContact from "./pages/EmergencyContact";
 import Portfolio from "./pages/Portfolio";
+import PortfolioDetail from "./pages/PortfolioDetail";
 import Demo from "./pages/Demo";
 import Consultation from "./pages/Consultation";
 import FreeConsultation from "./pages/FreeConsultation";
@@ -38,19 +39,18 @@ import CookiePolicy from "./pages/CookiePolicy";
 import PartnersSection from "./components/PartnersSection";
 import TeamsPage from "./pages/TeamsPage";
 import AdminDashboard from "./components/admin/AdminDashboard";
-// TODO: Build later - Team, Analytics, Settings, Portfolio, Authors
-// import TeamManagement from "./components/admin/TeamManagement";
+import TeamManagement from "./components/admin/TeamManagement";
 import BlogManagement from "./components/admin/BlogManagement";
-// import Analytics from "./components/admin/Analytics";
-// import Settings from "./components/admin/Settings";
-// import PortfolioManagement from "./components/admin/PortfolioManagement";
-// import AuthorManagement from "./components/admin/AuthorManagement";
+import Analytics from "./components/admin/Analytics";
+import Settings from "./components/admin/Settings";
+import PortfolioManagement from "./components/admin/PortfolioManagement";
+import AuthorManagement from "./components/admin/AuthorManagement";
 import ImageManagement from "./components/admin/ImageManagement";
 import SkipToContent from "@/components/SkipToContent";
 import BlogPage from "./pages/BlogPage";
 import BlogPostPage from "./pages/BlogPostPage";
 import AdminLogin from "./pages/AdminLogin";
-import AdminSignup from "./pages/AdminSignup";
+import AuthDiagnostic from "./pages/AuthDiagnostic";
 import { AdminLayout } from "./components/admin/AdminLayout";
 import { AuthProvider } from "./contexts/AuthContext";
 import { TeamProvider } from "./contexts/TeamContext";
@@ -70,7 +70,6 @@ const App = () => (
         <Route path="/about" element={<About />} />
         <Route path="/services" element={<Services />} />
 <Route path="/contact" element={<Contact />} />
-        <Route path="/contacts" element={<Contact />} />
         <Route path="/team" element={<TeamsPage />} />
         <Route path="/partnerssection" element={<PartnersSection />} />
         <Route path="/services/aerial-imagery" element={<AerialImagery />} />
@@ -85,11 +84,11 @@ const App = () => (
         <Route path="/discuss-project" element={<DiscussProject />} />
         <Route path="/emergency-contact" element={<EmergencyContact />} />
         <Route path="/portfolio" element={<Portfolio />} />
+        <Route path="/portfolio/:slug" element={<PortfolioDetail />} />
         <Route path="/demo" element={<Demo />} />
 {/* Consultation and contact routes redirect to contact section */}
         <Route path="/consultation" element={<Contact />} />
         <Route path="/free-consultation" element={<Contact />} />
-        <Route path="/contacts" element={<Contact />} />
         <Route path="/start-monitoring" element={<StartMonitoring />} />
         <Route path="/view-results" element={<ViewResults />} />
         <Route path="/view-reports" element={<ViewReports />} />
@@ -104,23 +103,36 @@ const App = () => (
         <Route path="/blog/:postId" element={<BlogPostPage />} />
 
         {/* Admin Routes */}
+        {/* /admin always shows the login page */}
+        <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
         <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin/signup" element={<AdminSignup />} />
         <Route path="/test-supabase" element={<SupabaseTest />} />
-<Route path="/admin" element={
+        <Route path="/auth-diagnostic" element={<AuthDiagnostic />} />
+        {/* Dashboard and CRUD are protected - require login */}
+        <Route path="/admin/dashboard" element={
           <ProtectedRoute>
             <AdminLayout />
           </ProtectedRoute>
         }>
           <Route index element={<AdminDashboard />} />
+          {/* Sub-routes that map to the management pages (add/edit/upload are handled via dialogs in the main components) */}
           <Route path="blog" element={<BlogManagement />} />
+          <Route path="blog/new" element={<BlogManagement />} />
+          <Route path="blog/edit/:postId" element={<BlogManagement />} />
           <Route path="images" element={<ImageManagement />} />
-          {/* TODO: Build later - Portfolio, Team, Authors, Analytics, Settings */}
-          {/* <Route path="portfolio" element={<PortfolioManagement />} /> */}
-          {/* <Route path="team" element={<TeamManagement />} /> */}
-          {/* <Route path="authors" element={<AuthorManagement />} /> */}
-          {/* <Route path="analytics" element={<Analytics />} /> */}
-          {/* <Route path="settings" element={<Settings />} /> */}
+          <Route path="images/upload" element={<ImageManagement />} />
+          <Route path="portfolio" element={<PortfolioManagement />} />
+          <Route path="portfolio/new" element={<PortfolioManagement />} />
+          <Route path="portfolio/edit/:projectId" element={<PortfolioManagement />} />
+          <Route path="portfolio/upload" element={<ImageManagement />} />
+          <Route path="team" element={<TeamManagement />} />
+          <Route path="team/new" element={<TeamManagement />} />
+          <Route path="team/edit/:memberId" element={<TeamManagement />} />
+          <Route path="authors" element={<AuthorManagement />} />
+          <Route path="authors/new" element={<AuthorManagement />} />
+          <Route path="authors/edit/:authorId" element={<AuthorManagement />} />
+          <Route path="analytics" element={<Analytics />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
 
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

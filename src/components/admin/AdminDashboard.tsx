@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, FileText, BarChart3, Settings, Image, Briefcase, AlertCircle, User as UserIcon } from 'lucide-react';
+import { Users, FileText, BarChart3, Settings, Image, User as UserIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useTeam } from '@/contexts/TeamContext';
@@ -43,11 +43,12 @@ const AdminDashboard = () => {
     }
   ]);
 
-  const [recentActivity, setRecentActivity] = useState<any[]>([]);
+  const [recentActivity, setRecentActivity] = useState<Array<{ type: string; message: string; time: string }>>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchDashboardData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
 const fetchDashboardData = async () => {
@@ -67,17 +68,44 @@ const fetchDashboardData = async () => {
         .from('authors')
         .select('*', { count: 'exact', head: true });
 
-      const newStats = [...stats];
-      newStats[0].value = portfolioCount?.toString() || '0'; // Portfolio items
-      newStats[0].loading = false;
-      newStats[1].value = blogCount?.toString() || '0'; // Blog posts
-      newStats[1].loading = false;
-      newStats[2].value = authorCount?.toString() || '0'; // Authors
-      newStats[2].loading = false;
-      newStats[3].value = teamMembers.length.toString(); // Team members
-      newStats[3].loading = false;
+      if (portfolioError) throw portfolioError;
+      if (blogError) throw blogError;
+      if (authorError) throw authorError;
 
-      setStats(newStats);
+      setStats([
+        {
+          title: 'Portfolio Items',
+          value: portfolioCount?.toString() || '0',
+          icon: Image,
+          color: 'text-blue-400',
+          bgColor: 'bg-blue-500/10',
+          loading: false
+        },
+        {
+          title: 'Blog Posts',
+          value: blogCount?.toString() || '0',
+          icon: FileText,
+          color: 'text-green-400',
+          bgColor: 'bg-green-500/10',
+          loading: false
+        },
+        {
+          title: 'Authors',
+          value: authorCount?.toString() || '0',
+          icon: UserIcon,
+          color: 'text-purple-400',
+          bgColor: 'bg-purple-500/10',
+          loading: false
+        },
+        {
+          title: 'Team Members',
+          value: teamMembers.length.toString(),
+          icon: Users,
+          color: 'text-orange-400',
+          bgColor: 'bg-orange-500/10',
+          loading: false
+        }
+      ]);
 
       // Fetch recent activity from multiple sources
       const [recentPortfolio, recentBlog] = await Promise.all([
@@ -93,7 +121,7 @@ const fetchDashboardData = async () => {
           .limit(2)
       ]);
 
-      const activities: any[] = [];
+      const activities: Array<{ type: string; message: string; time: string }> = [];
       
       if (!recentPortfolio.error && recentPortfolio.data) {
         recentPortfolio.data.forEach(item => {
@@ -122,8 +150,7 @@ const fetchDashboardData = async () => {
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
       // Set loading to false even on error
-      const newStats = stats.map(stat => ({ ...stat, loading: false }));
-      setStats(newStats);
+      setStats(prev => prev.map(stat => ({ ...stat, loading: false })));
     } finally {
       setLoading(false);
     }
@@ -134,42 +161,42 @@ const quickActions = [
       title: 'Manage Portfolio',
       description: 'Add, edit, or remove portfolio items',
       icon: Image,
-      link: '/admin/portfolio',
+      link: '/admin/dashboard/portfolio',
       color: 'text-blue-400'
     },
     {
       title: 'Blog Management',
       description: 'Create and manage blog posts',
       icon: FileText,
-      link: '/admin/blog',
+      link: '/admin/dashboard/blog',
       color: 'text-green-400'
     },
     {
       title: 'Author Management',
       description: 'Manage blog authors and profiles',
       icon: UserIcon,
-      link: '/admin/authors',
+      link: '/admin/dashboard/authors',
       color: 'text-purple-400'
     },
     {
       title: 'Team Management',
       description: 'Manage team member profiles',
       icon: Users,
-      link: '/admin/team',
+      link: '/admin/dashboard/team',
       color: 'text-orange-400'
     },
     {
       title: 'Analytics',
       description: 'View site analytics and reports',
       icon: BarChart3,
-      link: '/admin/analytics',
+      link: '/admin/dashboard/analytics',
       color: 'text-yellow-400'
     },
     {
       title: 'Settings',
       description: 'Configure application settings',
       icon: Settings,
-      link: '/admin/settings',
+      link: '/admin/dashboard/settings',
       color: 'text-gray-400'
     }
   ];

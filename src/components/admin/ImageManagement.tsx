@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,13 +11,7 @@ import {
   Images, 
   Plus,
   Save,
-  Trash2,
-  Eye,
-  Download,
-  Search,
-  Filter,
-  Grid3X3,
-  List
+  Trash2
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
@@ -63,6 +57,10 @@ const ImageManagement = () => {
     featured: false
   });
 
+  useEffect(() => {
+    fetchProjectMeta();
+  }, []);
+
   const handleImageSelect = (images: UploadedFile[]) => {
     setSelectedImages(images);
   };
@@ -97,6 +95,9 @@ const ImageManagement = () => {
         featured: false
       });
       setSelectedImages([]);
+
+      // Refresh the project meta list
+      await fetchProjectMeta();
 
       // Show success message
       alert('Project meta created successfully!');
@@ -256,7 +257,7 @@ const ImageManagement = () => {
                     <select
                       id="category"
                       value={formData.category}
-                      onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value as any }))}
+                      onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value as 'partnership' | 'club' | 'project' }))}
                       className="w-full bg-slate-700 border-slate-600 text-white rounded-lg px-3 py-2"
                     >
                       <option value="project">Project</option>
