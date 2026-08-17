@@ -1,6 +1,17 @@
 -- Analytics Database Setup
 -- This SQL creates tables for tracking website analytics and user engagement
 -- Note: This is the COMPLETE script. Run the ENTIRE file at once.
+-- IMPORTANT: idempotent (safe to re-run). Self-contained: it creates the
+-- update_updated_at_column() helper so it works even on a fresh database.
+
+-- Reusable helper function (required by the monthly_analytics trigger below)
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ language 'plpgsql';
 
 -- Site analytics for tracking overall metrics
 CREATE TABLE IF NOT EXISTS site_analytics (
@@ -97,12 +108,12 @@ BEGIN
       (
         SELECT json_agg(page_stats)
         FROM (
-          SELECT page_url, COUNT(*) as view_count
+          SELECT page_url, COUNT(*) as views
           FROM site_analytics
           WHERE created_at::DATE >= start_date AND created_at::DATE <= end_date
             AND page_url IS NOT NULL
           GROUP BY page_url
-          ORDER BY view_count DESC
+          ORDER BY views DESC
           LIMIT 10
         ) page_stats
       ),
@@ -112,12 +123,12 @@ BEGIN
       (
         SELECT json_agg(referrer_stats)
         FROM (
-          SELECT referrer, COUNT(*) as view_count
+          SELECT referrer, COUNT(*) as views
           FROM site_analytics
           WHERE created_at::DATE >= start_date AND created_at::DATE <= end_date
             AND referrer IS NOT NULL AND referrer != ''
           GROUP BY referrer
-          ORDER BY view_count DESC
+          ORDER BY views DESC
           LIMIT 10
         ) referrer_stats
       ),
