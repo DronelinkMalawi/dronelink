@@ -7,4 +7,12 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    // Do not restore sessions from localStorage across page loads.
+    // This forces admins to sign in again every time they open the
+    // admin area (the login page always shows), preventing anyone
+    // from landing on the dashboard without entering credentials.
+    persistSession: false,
+  },
+});

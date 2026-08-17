@@ -14,7 +14,8 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
   useEffect(() => {
     // Force re-validate the session on every protected route access
-    // Use getSession() with a timeout to prevent hanging
+    // Use getUser() with a timeout to prevent hanging
+    // (getUser() verifies with the server; getSession() only reads localStorage)
     const validateSession = async () => {
       try {
         const timeoutPromise = new Promise((_, reject) => {
@@ -22,11 +23,11 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         });
 
         const result = await Promise.race([
-          supabase.auth.getSession(),
+          supabase.auth.getUser(),
           timeoutPromise
-        ]) as { data: { session: { user: { id: string } } | null } };
+        ]) as { data: { user: { id: string } | null } };
 
-        setSessionValid(!!result.data?.session);
+        setSessionValid(!!result.data?.user);
       } catch (error) {
         // If session validation fails or times out, treat as not authenticated
         console.error('Session validation error:', error);

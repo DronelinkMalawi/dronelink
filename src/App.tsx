@@ -46,6 +46,9 @@ import Settings from "./components/admin/Settings";
 import PortfolioManagement from "./components/admin/PortfolioManagement";
 import AuthorManagement from "./components/admin/AuthorManagement";
 import ImageManagement from "./components/admin/ImageManagement";
+import TestimonialManagement from "./components/admin/TestimonialManagement";
+import ServicesManagement from "./components/admin/ServicesManagement";
+import PartnersManagement from "./components/admin/PartnersManagement";
 import SkipToContent from "@/components/SkipToContent";
 import BlogPage from "./pages/BlogPage";
 import BlogPostPage from "./pages/BlogPostPage";
@@ -131,6 +134,9 @@ const App = () => (
           <Route path="authors" element={<AuthorManagement />} />
           <Route path="authors/new" element={<AuthorManagement />} />
           <Route path="authors/edit/:authorId" element={<AuthorManagement />} />
+          <Route path="testimonials" element={<TestimonialManagement />} />
+          <Route path="services" element={<ServicesManagement />} />
+          <Route path="partners" element={<PartnersManagement />} />
           <Route path="analytics" element={<Analytics />} />
           <Route path="settings" element={<Settings />} />
         </Route>

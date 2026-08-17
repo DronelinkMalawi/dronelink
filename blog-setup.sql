@@ -216,14 +216,23 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- No sample data inserted - categories and tags are added through the admin panel
-INSERT INTO blog_categories (name, slug, description, color) VALUES
-  ('Technology', 'technology', 'Latest in drone technology and innovation', '#3B82F6'),
-  ('Industry News', 'industry-news', 'Drone industry updates and market trends', '#10B981'),
-  ('Case Studies', 'case-studies', 'Real-world drone applications and success stories', '#F59E0B'),
-  ('Tutorials', 'tutorials', 'How-to guides and drone operation tips', '#8B5CF6'),
-  ('Regulations', 'regulations', 'Drone laws and regulatory updates', '#EF4444')
-ON CONFLICT (slug) DO NOTHING;
+-- Auto-generate a unique slug from the title when inserting a blog post
+-- (the admin UI does not send a slug; keeping this DB-side guarantees the
+-- 'slug NOT NULL UNIQUE' constraint is always satisfied)
+CREATE OR REPLACE FUNCTION set_blog_post_slug()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.slug IS NULL OR NEW.slug = '' THEN
+    NEW.slug := create_unique_slug('blog_posts', NEW.title);
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS set_blog_post_slug ON blog_posts;
+CREATE TRIGGER set_blog_post_slug
+  BEFORE INSERT ON blog_posts
+  FOR EACH ROW EXECUTE FUNCTION set_blog_post_slug();
 
 -- Insert default tags
 INSERT INTO blog_tags (name, slug) VALUES

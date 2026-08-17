@@ -186,6 +186,13 @@ const PortfolioManagement = () => {
     }
   };
 
+  // Pick a featured image from the images gallery (uploaded to the 'images' bucket)
+  const handleSelectImage = (images: any[]) => {
+    if (images && images.length > 0) {
+      setFormData((prev) => ({ ...prev, featured_image_url: images[0].url }));
+    }
+  };
+
   const resetForm = () => {
     setFormData({
       title: '',
@@ -303,13 +310,30 @@ const PortfolioManagement = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Featured Image URL</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Featured Image</label>
+                {formData.featured_image_url && (
+                  <img
+                    src={formData.featured_image_url}
+                    alt="Featured image preview"
+                    className="mb-3 w-full h-40 object-cover rounded-lg bg-slate-700"
+                  />
+                )}
                 <Input
                   value={formData.featured_image_url}
                   onChange={(e) => setFormData({...formData, featured_image_url: e.target.value})}
-                  className="bg-slate-700 border-slate-600 text-white"
-                  placeholder="https://example.com/image.jpg"
+                  className="bg-slate-700 border-slate-600 text-white mb-2"
+                  placeholder="https://example.com/image.jpg  (or select from gallery below)"
                   required
+                />
+                <ImageGallery
+                  multiple={false}
+                  maxSelection={1}
+                  onImageSelect={handleSelectImage}
+                  trigger={
+                    <Button type="button" variant="outline" className="border-slate-600 text-white hover:bg-slate-700">
+                      <ImageIcon className="w-4 h-4 mr-2" /> Select from Gallery
+                    </Button>
+                  }
                 />
               </div>
 

@@ -8,9 +8,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Users, Plus, Edit, Trash2, Mail, Phone, Upload, X, Camera } from 'lucide-react';
+import { Users, Plus, Edit, Trash2, Mail, Phone, Upload, X, Camera, Image as ImageIcon } from 'lucide-react';
 import { useTeam } from '@/contexts/TeamContext';
 import { supabase } from '@/lib/supabase';
+import ImageGallery from './ImageGallery';
 
 interface TeamMember {
   id: string;
@@ -53,13 +54,14 @@ const TeamManagement = () => {
     sort_order: 0
   });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [galleryImageUrl, setGalleryImageUrl] = useState<string>('');
   const [imagePreview, setImagePreview] = useState<string>('');
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
 const handleAddMember = async () => {
     if (formData.name && formData.role && formData.email) {
-      let profileImageUrl = '';
+      let profileImageUrl = galleryImageUrl || formData.profile_image_url || '';
 
       if (selectedImage) {
         const uploadedUrl = await handleImageUpload();
@@ -91,12 +93,13 @@ const handleAddMember = async () => {
 const handleEditMember = (member: TeamMember) => {
     setEditingMember(member);
     setFormData(member);
+    setGalleryImageUrl(member.profile_image_url || '');
     setImagePreview(member.profile_image_url || '');
   };
 
 const handleUpdateMember = async () => {
     if (editingMember && formData.name && formData.role && formData.email) {
-      let profileImageUrl = editingMember.profile_image_url;
+      let profileImageUrl = galleryImageUrl || formData.profile_image_url || editingMember.profile_image_url;
 
       if (selectedImage) {
         const uploadedUrl = await handleImageUpload();
@@ -135,6 +138,7 @@ const resetForm = () => {
       sort_order: 0
     });
     setSelectedImage(null);
+    setGalleryImageUrl('');
     setImagePreview('');
   };
 
@@ -142,11 +146,28 @@ const resetForm = () => {
     const file = event.target.files?.[0];
     if (file) {
       setSelectedImage(file);
+      // Choosing a local file overrides any image picked from the gallery
+      setGalleryImageUrl('');
+      setFormData((prev) => ({ ...prev, profile_image_url: '' }));
       const reader = new FileReader();
       reader.onload = (e) => {
         setImagePreview(e.target?.result as string);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  // Pick an image that was already uploaded to the 'images' bucket (via the gallery)
+  const handleSelectFromGallery = (images: any[]) => {
+    if (images && images.length > 0) {
+      const url = images[0].url;
+      setSelectedImage(null);
+      setGalleryImageUrl(url);
+      setFormData((prev) => ({ ...prev, profile_image_url: url }));
+      setImagePreview(url);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -183,6 +204,8 @@ const resetForm = () => {
 
   const removeImage = () => {
     setSelectedImage(null);
+    setGalleryImageUrl('');
+    setFormData((prev) => ({ ...prev, profile_image_url: '' }));
     setImagePreview('');
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -249,7 +272,7 @@ if (loading) {
                   </button>
                 )}
               </div>
-              <div>
+              <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-3">
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -265,6 +288,17 @@ if (loading) {
                   <Upload className="w-4 h-4 mr-2" />
                   {imagePreview ? 'Change Image' : 'Upload Image'}
                 </label>
+                <ImageGallery
+                  multiple={false}
+                  maxSelection={1}
+                  onImageSelect={handleSelectFromGallery}
+                  trigger={
+                    <Button type="button" variant="outline" className="border-slate-600 text-white hover:bg-slate-700">
+                      <ImageIcon className="w-4 h-4 mr-2" />
+                      Select from Gallery
+                    </Button>
+                  }
+                />
               </div>
               {uploading && (
                 <p className="text-sm text-blue-400">Uploading image...</p>
@@ -470,7 +504,7 @@ if (loading) {
                   </button>
                 )}
               </div>
-              <div>
+              <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-3">
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -486,6 +520,17 @@ if (loading) {
                   <Upload className="w-4 h-4 mr-2" />
                   {imagePreview ? 'Change Image' : 'Upload Image'}
                 </label>
+                <ImageGallery
+                  multiple={false}
+                  maxSelection={1}
+                  onImageSelect={handleSelectFromGallery}
+                  trigger={
+                    <Button type="button" variant="outline" className="border-slate-600 text-white hover:bg-slate-700">
+                      <ImageIcon className="w-4 h-4 mr-2" />
+                      Select from Gallery
+                    </Button>
+                  }
+                />
               </div>
               {uploading && (
                 <p className="text-sm text-blue-400">Uploading image...</p>

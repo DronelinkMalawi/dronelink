@@ -1,18 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Linkedin, Mail, Twitter, X, Award, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-
-import teamCEO from '@/assets/team-ceo.jpg';
-import teamCTO from '@/assets/team-cto.jpg';
-import teamGIS from '@/assets/team-gis.jpg';
-import teamPilot from '@/assets/team-pilot.jpg';
-import teamDev from '@/assets/team-dev.jpg';
-import teamMarketing from '@/assets/team-marketing.jpg';
+import { useTeam } from '@/contexts/TeamContext';
 
 interface TeamMember {
+  id?: string;
   name: string;
   role: string;
   image: string;
@@ -27,59 +22,31 @@ interface TeamMember {
 
 const TeamsSection = () => {
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const { teamMembers: dbTeamMembers, loading } = useTeam();
 
-  const teamMembers: TeamMember[] = [
-    {
-      name: 'Rachel Kaunda',
-      role: 'Chief Executive Officer',
-      image: teamCEO,
-      bio: 'With a degree in geology and extensive experience in spatial imaging, Rachel leads DroneLinkMW with a vision for integrating advanced aerial technology into Malawi’s industrial landscape.',
-      expertise: ['Strategic Leadership', 'Geological Surveying', 'Business Development'],
-      social: {
-        linkedin: 'https://www.linkedin.com/in/rachel-kumwenda-kaunda-2252b0168/',
-        email: 'rachelkaunda@dronelinkmw.com',
-        twitter: '#',
-      },
-    },
-    
-    {
-      name: 'Edith Kalagho',
-      role: 'Land Surveyor',
-      image: teamGIS,
-      bio: 'Specializing in high-precision land surveying and spatial analysis, Edith ensures every mission meets strict accuracy standards for infrastructure projects.',
-      expertise: ['GIS Analysis', 'Cadastral Surveying', 'Remote Sensing'],
-      social: {
-        linkedin: '#',
-        email: 'edithkalagho@dronelinkmw.com',
-        twitter: '#',
-      },
-    },
-    {
-      name: 'Bright Mataya',
-      role: 'Senior Drone Pilot',
-      image: teamPilot,
-      bio: 'A certified commercial pilot with thousands of flight hours, Bright leads our flight operations with a focus on safety and cinematic precision.',
-      expertise: ['Flight Ops', 'Aerial Cinematography', 'Safety Management'],
-      social: {
-        linkedin: '#',
-        email: 'brightmataya@dronelinkmw.com',
-        twitter: '#',
-      },
-    },
-    
-    {
-      name: 'Aaron Amos',
-      role: 'Strategy Lead',
-      image: teamMarketing,
-      bio: 'Driving growth and brand visibility, Aaron ensures DroneLinkMW remains the leading choice for enterprise aerial intelligence in the region.',
-      expertise: ['Market Strategy', 'Partnerships'],
-      social: {
-        linkedin: '#',
-        email: 'aaronamos@dronelinkmw.com',
-        twitter: '#',
-      },
-    },
-  ];
+  // Transform database team members to component format
+  useEffect(() => {
+    if (dbTeamMembers && dbTeamMembers.length > 0) {
+      const transformedMembers = dbTeamMembers
+        .filter(member => member.is_active) // Only show active members
+        .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0)) // Sort by sort_order
+        .map(member => ({
+          id: member.id,
+          name: member.name,
+          role: member.role,
+          image: member.profile_image_url || '',
+          bio: member.bio || '',
+          expertise: member.expertise || [],
+          social: {
+            linkedin: (member.social_links?.linkedin as string) || '#',
+            email: member.email || '',
+            twitter: (member.social_links?.twitter as string) || '#',
+          },
+        }));
+      setTeamMembers(transformedMembers);
+    }
+  }, [dbTeamMembers]);
 
   const handleMemberClick = (member: TeamMember) => {
     setSelectedMember(member);
@@ -90,6 +57,40 @@ const TeamsSection = () => {
     setSelectedMember(null);
     document.body.style.overflow = 'auto';
   };
+
+  // Loading state
+  if (loading) {
+    return (
+      <section id="team" className="py-24 bg-slate-50 overflow-hidden">
+        <div className="container mx-auto px-6">
+          <div className="max-w-2xl mb-12 md:mb-20">
+            <h2 className="text-sm font-mono text-cyan-600 tracking-[0.3em] uppercase mb-4">// THE CREW</h2>
+            <h3 className="text-4xl md:text-5xl font-bold tracking-tighter text-slate-950">
+              Driven by <span className="text-slate-400 font-light italic">Expertise.</span>
+            </h3>
+          </div>
+          <div className="text-center text-slate-600">Loading team members...</div>
+        </div>
+      </section>
+    );
+  }
+
+  // Empty state
+  if (teamMembers.length === 0) {
+    return (
+      <section id="team" className="py-24 bg-slate-50 overflow-hidden">
+        <div className="container mx-auto px-6">
+          <div className="max-w-2xl mb-12 md:mb-20">
+            <h2 className="text-sm font-mono text-cyan-600 tracking-[0.3em] uppercase mb-4">// THE CREW</h2>
+            <h3 className="text-4xl md:text-5xl font-bold tracking-tighter text-slate-950">
+              Driven by <span className="text-slate-400 font-light italic">Expertise.</span>
+            </h3>
+          </div>
+          <div className="text-center text-slate-600">No team members added yet.</div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="team" className="py-24 bg-slate-50 overflow-hidden">

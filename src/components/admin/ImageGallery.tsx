@@ -70,34 +70,55 @@ const ImageGallery = ({
     }
   }, [isDialogOpen]);
 
+  // Recursively list every file in the images bucket (including subfolders like
+  // 'gallery/' and 'uploads/') so images uploaded from any admin screen show up.
+  const listAllFiles = async (prefix: string = ''): Promise<any[]> => {
+    const { data, error } = await supabase.storage
+      .from('images')
+      .list(prefix, { limit: 100, sortBy: { column: 'name', order: 'asc' } });
+
+    if (error) throw error;
+
+    let all: any[] = [];
+    for (const item of data || []) {
+      // In Supabase storage listings, folders have id === null and metadata === null
+      if (item.id === null && item.metadata === null) {
+        const nested = await listAllFiles(`${prefix}${item.name}/`);
+        all = all.concat(nested);
+      } else {
+        all.push({
+          ...item,
+          path: `${prefix}${item.name}`
+        });
+      }
+    }
+    return all;
+  };
+
   const fetchImages = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      // Get all files from the images bucket
-      const { data, error } = await supabase.storage
-        .from('images')
-        .list('', { limit: 100 });
-
-      if (error) throw error;
+      // Get all files from the images bucket (recursively)
+      const allFiles = await listAllFiles('');
 
       // Get public URLs for all files
       const filesWithUrls = await Promise.all(
-        (data || []).map(async (file) => {
+        allFiles.map(async (file) => {
           const { data: publicUrlData } = supabase.storage
             .from('images')
-            .getPublicUrl(file.name);
+            .getPublicUrl(file.path);
 
           return {
-            id: file.id || file.name,
+            id: file.id || file.path,
             name: file.name,
             url: publicUrlData.publicUrl,
             size: file.metadata?.size || 0,
             type: file.metadata?.mimetype || 'image/jpeg',
             uploadedAt: file.created_at || new Date().toISOString(),
             bucket: 'images',
-            path: file.name
+            path: file.path
           } as UploadedFile;
         })
       );

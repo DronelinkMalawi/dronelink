@@ -11,7 +11,10 @@ import {
   Users,
   User,
   BarChart3,
-  Settings
+  Settings,
+  MessageSquare,
+  Layers,
+  Handshake
 } from 'lucide-react';
 
 interface NavAction {
@@ -115,6 +118,45 @@ const AdminNavigation = ({
         {
           label: 'Add Author',
           href: '/admin/dashboard/authors/new',
+          icon: <Plus className="h-3 w-3" />
+        }
+      ]
+    },
+    {
+      label: 'Testimonials',
+      href: '/admin/dashboard/testimonials',
+      icon: <MessageSquare className="h-4 w-4" />,
+      description: 'Manage testimonials',
+      actions: [
+        {
+          label: 'Add Testimonial',
+          href: '/admin/dashboard/testimonials',
+          icon: <Plus className="h-3 w-3" />
+        }
+      ]
+    },
+    {
+      label: 'Services',
+      href: '/admin/dashboard/services',
+      icon: <Layers className="h-4 w-4" />,
+      description: 'Manage homepage services',
+      actions: [
+        {
+          label: 'Add Service',
+          href: '/admin/dashboard/services',
+          icon: <Plus className="h-3 w-3" />
+        }
+      ]
+    },
+    {
+      label: 'Partners',
+      href: '/admin/dashboard/partners',
+      icon: <Handshake className="h-4 w-4" />,
+      description: 'Manage homepage partners',
+      actions: [
+        {
+          label: 'Add Partner',
+          href: '/admin/dashboard/partners',
           icon: <Plus className="h-3 w-3" />
         }
       ]

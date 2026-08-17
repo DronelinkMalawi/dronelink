@@ -1,45 +1,53 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { supabase } from '@/lib/supabase';
+
+interface Service {
+  id: string;
+  index: string;
+  title: string;
+  description: string;
+  features: string[];
+  link: string;
+}
 
 const ServicesSection = () => {
-  const services = [
-    {
-      index: '01',
-      title: 'Aerial Imagery',
-      description:
-        'High-resolution aerial photography and videography designed for inspection, documentation, and strategic analysis.',
-      features: ['4K Ultra HD Capture', 'Live Streaming', 'Multi-angle Coverage', 'Weather-Ready Systems'],
-      link: '/services/aerial-imagery',
-    },
-    {
-      index: '02',
-      title: 'GIS Mapping & Analysis',
-      description:
-        'Professional geospatial data collection, processing, and visualization for accurate land intelligence.',
-      features: ['3D Terrain Models', 'Boundary Mapping', 'Topographic Surveys', 'CAD Integration'],
-      link: '/services/gis-mapping',
-    },
-    {
-      index: '03',
-      title: 'Precision Agriculture',
-      description:
-        'Advanced crop monitoring and agricultural intelligence powered by multispectral aerial data.',
-      features: ['Crop Health Analysis', 'Yield Forecasting', 'Irrigation Planning', 'Pest Detection'],
-      link: '/services/precision-agriculture',
-    },
-    {
-      index: '04',
-      title: 'Land Health Monitoring',
-      description:
-        'Environmental monitoring solutions supporting sustainable land management and conservation.',
-      features: ['Vegetation Change Detection', 'Erosion Monitoring', 'Impact Assessment', 'Longitudinal Analysis'],
-      link: '/services/land-health-monitoring',
-    },
-  ];
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('services')
+          .select('*')
+          .eq('is_active', true)
+          .order('sort_order', { ascending: true });
+        if (error) throw error;
+        setServices(
+          (data || []).map((s) => ({
+            id: s.id,
+            index: s.index_label || '01',
+            title: s.title,
+            description: s.description,
+            features: Array.isArray(s.features) ? s.features : [],
+            link: s.link || '/contact',
+          }))
+        );
+      } catch (err) {
+        console.error('Error fetching services:', err);
+        setServices([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchServices();
+  }, []);
 
   return (
     <section id="services" className="relative py-24 lg:py-32 bg-background">
@@ -62,6 +70,11 @@ const ServicesSection = () => {
         </div>
 
         {/* Grid */}
+        {loading ? (
+          <p className="text-center text-muted-foreground py-10">Loading services...</p>
+        ) : services.length === 0 ? (
+          <p className="text-center text-muted-foreground py-10">No services to display yet.</p>
+        ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-24">
           {services.map((service) => (
             <Card
@@ -117,6 +130,7 @@ const ServicesSection = () => {
             </Card>
           ))}
         </div>
+        )}
 
         {/* Bottom CTA */}
         <div className="border border-foreground p-10 lg:p-14 max-w-5xl">

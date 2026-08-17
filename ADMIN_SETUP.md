@@ -163,4 +163,98 @@ If you prefer to create an account through the application:
 
 - **"Invalid login credentials"**: Make sure the user exists in Supabase Auth
 - **"Email not confirmed"**: Enable auto-confirm in Supabase Auth settings
+---
+
+## 🛠️ Troubleshooting: Login, Dashboard Access & Image Uploads
+
+> Verified against the live Supabase project on 8/13/2026.
+
+### 1. "Accessing the dashboard directly without logging in" / stale session
+Two changes ensure the login page always appears and the dashboard can't be
+reached without credentials:
+
+- The Supabase client is configured with `persistSession: false`
+  (`src/lib/supabase.ts`), so sessions are **not restored** from `localStorage`
+  across page loads. Every time you open `/admin` or `/admin/dashboard` you see
+  the **login form** and must sign in.
+- Authentication is **server-verified** (`getUser()`), so a stale/unverified
+  session is never trusted.
+
+- **Do a hard refresh** (`Ctrl + Shift + R`) and clear site data for `localhost`
+  (DevTools → Application → Storage → Clear site data) once, to discard any
+  leftover session already stored in the browser.
+- After that, `/admin` and `/admin/dashboard` always show the login page.
+
+### 2. Login is not working ("Invalid login credentials" / "Email not confirmed")
+The Supabase auth endpoint responds correctly (diagnostics confirmed), so this
+is an account configuration issue, not a connection issue.
+
+- The project has **email confirmation enabled** (`mailer_autoconfirm: false`).
+  Either:
+  - Create/replace the admin user with **Auto-confirm user** enabled
+    (Dashboard → Authentication → Users → Add user), **or**
+  - Confirm the admin's email, **or** disable email confirmation for development
+    (Dashboard → Authentication → Sign In / Providers → Email → "Confirm email").
+- Make sure the admin user exists at all (Dashboard → Authentication → Users).
+
+### 3. "new row violates row-level security policy" when adding an image
+This comes from the app inserting into the `project_meta` table, whose Row
+Level Security policy only allows `auth.role() = 'authenticated'`. If your
+session is not genuinely logged in (see #1 and #2), the insert is rejected.
+
+Fix: complete a successful admin login first — then DB writes are permitted.
+
+### 4. Images don't upload to storage
+The `images` storage bucket does **not exist** on the project yet
+(verified via `GET /storage/v1/bucket` → `[]`). Create it:
+- Run `storage-setup.sql` in the Supabase SQL Editor, **or**
+- Manually: Dashboard → Storage → New bucket → name `images`, **Public** = ON.
 - **Still can't access**: Check that the user was created successfully in Supabase
+
+### 5. "Adding pictures" / "Adding blog" is not working
+
+There are two parts to this, both fixed by **one** SQL script:
+
+**Backend (do this first):** Run the consolidated `complete-setup.sql` file once in
+Supabase Dashboard → SQL Editor → **Run**. It is idempotent (safe to re-run) and:
+- Creates the missing public **`images` storage bucket** + storage RLS policies so
+  admins can upload/delete and the public can view uploaded images.
+- Creates (or repairs) the **blog tables** (`authors`, `blog_categories`,
+  `blog_tags`, `blog_posts`, `blog_post_tags`, `blog_analytics`) and all their
+  **RLS policies** so an authenticated admin can save blog posts.
+- Creates the **`project_meta`** table + RLS policies used by the Image Management
+  module.
+
+If you already ran the individual setup scripts before, `complete-setup.sql` will
+simply fill in whatever is still missing — no harm re-running it.
+
+**Frontend bug (fixed in this repo):** the Image Gallery (`ImageGallery.tsx`) only
+listed files from the **root** of the `images` bucket, while uploads were written
+into `gallery/` and `uploads/` subfolders — so uploaded pictures never appeared in
+the gallery and the Blog's "Select from Gallery" stayed empty. It now **recursively
+lists the whole bucket**, so images from any folder appear. Rebuild/deploy the app
+to pick up this change.
+
+### 6. Landing page now pulls real data from the database
+
+`complete-setup.sql` now also creates (idempotently) three new tables that the
+**static parts** of the homepage read from, so you can manage them with real data:
+
+| Homepage section | Table | Admin screen |
+|------------------|-------|--------------|
+| "Our Impact Gallery" | `project_meta` (existing) | Images → Save Project Meta |
+| "Our Partners" | `partners` | Admin → Partners |
+| "What Our Clients Say" | `testimonials` | Admin → Testimonials |
+| "Enterprise Drone Intelligence Services" | `services` | Admin → Services |
+
+Team and Portfolio already read from `team_members` and `portfolio_items`.
+
+Each new table ships with **RLS policies**: the public can read *active* rows, and
+only authenticated admins can add/edit/delete. `complete-setup.sql` also inserts
+starter rows (the original hardcoded services, partners, and the Robert Malongo
+testimonial) so the homepage is not empty after setup.
+
+To add/edit content: sign in to the admin dashboard and use the **Testimonials**,
+**Services**, and **Partners** screens in the sidebar. To populate the Impact
+Gallery, use **Images → Save Project Meta** (title, description, category, and a
+gallery image).

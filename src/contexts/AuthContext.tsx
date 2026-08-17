@@ -40,23 +40,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const currentSession = result.data?.session;
 
         if (currentSession) {
-          // Try to validate with server, but don't block on it
+          // Validate the session against the server. Only a session that
+          // the server confirms as valid grants access to the admin panel.
+          // If verification fails (stale/expired session or unreachable
+          // backend), treat the user as logged out so they must sign in.
           try {
             const { data: { user: currentUser }, error } = await supabase.auth.getUser();
             if (!error && currentUser && isMounted) {
               setSession(currentSession);
               setUser(currentUser);
             } else if (isMounted) {
-              // Session exists but user validation failed - still allow access
-              // This prevents the "Checking authentication..." hang
-              setSession(currentSession);
-              setUser(currentSession.user ?? null);
+              // Session exists locally but the server did not verify it.
+              setSession(null);
+              setUser(null);
             }
           } catch (error) {
-            // If server validation fails, still use the session from localStorage
+            // Server unreachable / verification failed - secure default: logged out
             if (isMounted) {
-              setSession(currentSession);
-              setUser(currentSession.user ?? null);
+              setSession(null);
+              setUser(null);
             }
           }
         } else {
