@@ -6,12 +6,14 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import logo from '@/assets/dronelinkwhite.png';
+import { useSiteSettings } from '@/contexts/SiteSettingsContext';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { settings } = useSiteSettings();
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 20);
@@ -54,7 +56,7 @@ const Navbar = () => {
             : 'bg-transparent py-6'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between relative z-[120]">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between relative z-[120]">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group" onClick={() => setIsOpen(false)}>
             <img 
@@ -63,7 +65,7 @@ const Navbar = () => {
               className="h-9 w-auto transition-transform duration-300 group-hover:scale-105"
             />
             <span className="text-lg font-bold tracking-tighter text-white uppercase">
-              DroneLink<span className="text-cyan-400">MW</span>
+              {settings.company_name}
             </span>
           </Link>
 
@@ -73,13 +75,13 @@ const Navbar = () => {
               <button
                 key={item.name}
                 onClick={() => handleNavClick(item.href)}
-                className="text-[11px] font-mono uppercase tracking-[0.2em] text-white/60 hover:text-cyan-400 transition-colors"
+                className="text-sm font-normal text-slate-200/85 hover:text-cyan-400 transition-colors"
               >
                 {item.name}
               </button>
             ))}
             <Link to="/get-quote">
-              <Button size="sm" className="rounded-full bg-cyan-500 text-slate-950 hover:bg-white font-bold px-6 shadow-lg shadow-cyan-500/20">
+              <Button size="sm" className="rounded-full bg-cyan-500 text-slate-950 hover:bg-cyan-400 font-bold px-6 shadow-lg shadow-cyan-500/20">
                 START PROJECT
               </Button>
             </Link>
@@ -117,7 +119,7 @@ const Navbar = () => {
                     onClick={() => handleNavClick(item.href)}
                     className="text-left"
                   >
-                    <span className="text-xs font-mono text-cyan-500 tracking-[0.3em] uppercase block mb-1">0{index + 1}</span>
+                    <span className="text-xs text-cyan-400/70 uppercase tracking-[0.15em] block mb-1">0{index + 1}</span>
                     <span className="text-4xl font-bold text-white tracking-tighter hover:text-cyan-400 transition-colors">
                       {item.name}
                     </span>
@@ -135,7 +137,7 @@ const Navbar = () => {
                       GET A QUOTE
                     </Button>
                   </Link>
-                  <p className="text-center mt-8 text-white/30 font-mono text-[10px] tracking-widest uppercase">
+                  <p className="text-center mt-8 text-slate-400 text-xs tracking-widest uppercase">
                     © 2026 DRONELINKMW // AERIAL INTELLIGENCE
                   </p>
                 </motion.div>

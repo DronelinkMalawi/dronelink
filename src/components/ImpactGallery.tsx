@@ -34,44 +34,66 @@ const ImpactGallery = () => {
   }, []);
 
   return (
-    <section
-      className="relative py-16 px-4 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900"
-      aria-label="Drone Imagery Gallery"
-    >
-      <div className="container mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Our Impact Gallery</h2>
-          <p className="text-white/80 max-w-2xl mx-auto">Showcasing our work across education, partnerships, and community development</p>
+    <section className="relative py-24 lg:py-28 bg-slate-900/40" aria-label="Drone imagery gallery">
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="h-full border-x border-white/5 max-w-7xl mx-auto" />
+      </div>
+
+      <div className="mx-auto w-full max-w-7xl px-6 lg:px-8">
+        <div className="mb-14">
+          <p className="inline-flex items-center gap-3 text-xs font-medium uppercase tracking-[0.28em] text-cyan-400/90">
+            <span className="h-px w-8 bg-cyan-400/70" aria-hidden />
+            Field Notes
+          </p>
+          <h2 className="mt-6 text-4xl sm:text-5xl font-bold text-white tracking-tight">
+            Our Impact Gallery
+          </h2>
+          <p className="mt-4 text-lg text-slate-300/90 max-w-2xl">
+            Real flights, real results — a look at our work across agriculture,
+            partnerships, and community development.
+          </p>
         </div>
 
         {loading ? (
-          <p className="text-center text-white/60 py-10">Loading gallery...</p>
+          <p className="text-center text-slate-400 py-12">Loading gallery...</p>
         ) : items.length === 0 ? (
-          <p className="text-center text-white/60 py-10">
-            No gallery items yet. Add them via the admin Images section.
-          </p>
+          <div className="text-center py-12">
+            <p className="text-slate-400">
+              No gallery items yet. Add them via the admin Images section.
+            </p>
+          </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
             {items.map((item) => (
-              <div key={item.id} className="relative rounded-2xl overflow-hidden shadow-2xl border border-blue-400/20 group">
+              <article
+                key={item.id}
+                className="group relative overflow-hidden rounded-2xl bg-slate-800 border border-white/10"
+              >
                 {item.image_url ? (
                   <img
                     src={item.image_url}
                     alt={item.title}
-                    className="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-105"
+                    className="aspect-[4/3] w-full object-cover transition-transform duration-700 group-hover:scale-105"
                     loading="lazy"
                   />
                 ) : (
-                  <div className="w-full h-64 bg-slate-800 flex items-center justify-center text-white/50">
-                    {item.category}
+                  <div className="aspect-[4/3] w-full bg-slate-800 flex items-center justify-center text-slate-400">
+                    {item.category || 'DroneLink'}
                   </div>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/10 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <h3 className="text-xl font-bold text-white mb-2">{item.title}</h3>
-                  {item.description && <p className="text-white/80 text-sm">{item.description}</p>}
+                  {item.category && (
+                    <span className="inline-block px-2.5 py-1 rounded-full bg-cyan-500/15 text-cyan-300 text-xs mb-3">
+                      {item.category}
+                    </span>
+                  )}
+                  <h3 className="text-lg font-semibold text-white leading-snug">{item.title}</h3>
+                  {item.description && (
+                    <p className="mt-2 text-sm text-slate-300/90 line-clamp-2">{item.description}</p>
+                  )}
                 </div>
-              </div>
+              </article>
             ))}
           </div>
         )}

@@ -33,29 +33,38 @@ const PartnersSection = () => {
   }, []);
 
   return (
-    <section className="py-16 bg-slate-800/50">
-      <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center text-white mb-12">Our Partners</h2>
+    <section className="py-20 bg-slate-950">
+      <div className="mx-auto w-full max-w-7xl px-6 lg:px-8">
+        <div className="mb-12 text-center">
+          <p className="inline-flex items-center gap-3 text-xs font-medium uppercase tracking-[0.28em] text-slate-400/90">
+            <span className="h-px w-8 bg-cyan-400/70" aria-hidden />
+            Trusted Network
+          </p>
+          <h2 className="mt-5 text-3xl sm:text-4xl font-bold text-white tracking-tight">
+            Our Partners
+          </h2>
+        </div>
+
         {loading ? (
-          <p className="text-center text-gray-400">Loading partners...</p>
+          <p className="text-center text-slate-400 py-10">Loading partners...</p>
         ) : partners.length === 0 ? (
-          <p className="text-center text-gray-400">No partners to display yet.</p>
+          <p className="text-center text-slate-400 py-10">No partners to display yet.</p>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {partners.map((partner) => (
               <div
                 key={partner.id}
-                className="flex items-center justify-center p-8 bg-slate-700/50 rounded-lg"
+                className="flex items-center justify-center rounded-2xl border border-white/10 bg-slate-900/60 p-8 min-h-20"
               >
                 {partner.logo_url ? (
                   <img
                     src={partner.logo_url}
                     alt={partner.name}
-                    className="max-h-16 max-w-full object-contain"
+                    className="max-h-14 max-w-full object-contain grayscale hover:grayscale-0 transition-[filter] duration-300"
                     loading="lazy"
                   />
                 ) : (
-                  <span className="text-white font-semibold">{partner.name}</span>
+                  <span className="text-white/80 font-semibold">{partner.name}</span>
                 )}
               </div>
             ))}

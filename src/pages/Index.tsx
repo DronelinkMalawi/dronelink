@@ -12,26 +12,34 @@ import ImpactGallery from '@/components/ImpactGallery';
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+    <div className="min-h-screen bg-slate-950">
       <Navbar />
       <HeroSection />
 
-      {/* Impact Gallery - populated from the project_meta table via the admin Images section */}
-      <ImpactGallery />
-
+      {/* Who we are */}
       <div id="about">
         <AboutSection />
       </div>
-      <PartnersSection />
-      <TeamsSection />
-      <PortfolioShowcase />
+
+      {/* What we do */}
       <div id="services">
         <ServicesSection />
       </div>
+
+      {/* Proof of work */}
+      <PortfolioShowcase />
+      <ImpactGallery />
+
+      {/* Trust signals */}
+      <PartnersSection />
+      <TeamsSection />
       <TestimonialSection />
+
+      {/* Talk to us */}
       <div id="contact">
         <ContactSection />
       </div>
+
       <Footer />
     </div>
   );

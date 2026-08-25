@@ -57,6 +57,7 @@ import AuthDiagnostic from "./pages/AuthDiagnostic";
 import { AdminLayout } from "./components/admin/AdminLayout";
 import { AuthProvider } from "./contexts/AuthContext";
 import { TeamProvider } from "./contexts/TeamContext";
+import { SiteSettingsProvider } from "./contexts/SiteSettingsContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SupabaseTest from "./components/SupabaseTest";
 import ScrollToHash from "./components/ScrollToHash";
@@ -157,9 +158,11 @@ const Root = () => (
         <FaviconThemeSwitcher />
         <AuthProvider>
           <TeamProvider>
-            <BrowserRouter>
-              <App />
-            </BrowserRouter>
+            <SiteSettingsProvider>
+              <BrowserRouter>
+                <App />
+              </BrowserRouter>
+            </SiteSettingsProvider>
           </TeamProvider>
         </AuthProvider>
       </TooltipProvider>

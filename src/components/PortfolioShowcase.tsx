@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/lib/supabase';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ArrowUpRight } from 'lucide-react';
 
 interface PortfolioItem {
   id: string;
@@ -45,20 +45,24 @@ const PortfolioShowcase = () => {
   };
 
   return (
-    <section className="py-24 bg-slate-900/50">
-      <div className="container mx-auto px-4">
+    <section className="py-24 lg:py-28 bg-slate-950">
+      <div className="mx-auto w-full max-w-7xl px-6 lg:px-8">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
-          <div>
-            <div className="inline-block mb-4 border border-cyan-500/30 px-4 py-2 text-sm font-medium tracking-wide text-cyan-400">
-              PORTFOLIO
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
-              Featured <span className="text-cyan-400">Projects</span>
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-8">
+          <div className="max-w-2xl">
+            <p className="inline-flex items-center gap-3 text-xs font-medium uppercase tracking-[0.28em] text-cyan-400/90">
+              <span className="h-px w-8 bg-cyan-400/70" aria-hidden />
+              Portfolio
+            </p>
+            <h2 className="mt-6 text-4xl sm:text-5xl font-bold text-white tracking-tight">
+              Featured projects
             </h2>
+            <p className="mt-4 text-lg text-slate-300/90">
+              A selection of missions that show what precision aerial data can deliver.
+            </p>
           </div>
-          <Link to="/portfolio" className="mt-6 md:mt-0">
-            <Button variant="outline" className="border-slate-600 text-gray-300 hover:bg-slate-800 hover:text-white">
+          <Link to="/portfolio" className="shrink-0">
+            <Button variant="outline" className="border border-white/15 text-white hover:bg-slate-800">
               View All Projects
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -67,60 +71,63 @@ const PortfolioShowcase = () => {
 
         {loading ? (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400 mx-auto mb-4"></div>
-            <p className="text-gray-400">Loading projects...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400 mx-auto mb-4" />
+            <p className="text-slate-400">Loading projects...</p>
           </div>
         ) : items.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
             {items.map((item) => (
-              <Link key={item.id} to={`/portfolio/${item.slug}`} className="group">
-                <div className="bg-slate-800/50 border border-slate-700 rounded-2xl overflow-hidden hover:bg-slate-700/50 hover:border-cyan-500/30 transition-all duration-300 h-full">
-                  <div className="aspect-video bg-slate-700 relative overflow-hidden">
-                    {item.featured_image_url ? (
-                      <img
-                        src={item.featured_image_url}
-                        alt={item.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-400">
-                        <span className="text-4xl">🖼️</span>
-                      </div>
-                    )}
+              <Link
+                key={item.id}
+                to={`/portfolio/${item.slug}`}
+                className="group rounded-2xl bg-slate-900 border border-white/10 overflow-hidden hover:border-cyan-400/40 transition-colors h-full"
+              >
+                <div className="aspect-video relative overflow-hidden bg-slate-800">
+                  {item.featured_image_url ? (
+                    <img
+                      src={item.featured_image_url}
+                      alt={item.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-slate-500">
+                      <span className="text-4xl">🖼️</span>
+                    </div>
+                  )}
+                  {item.category && (
                     <div className="absolute top-4 left-4">
-                      <Badge className="bg-cyan-600/90 text-white">
-                        {item.category}
-                      </Badge>
+                      <Badge className="bg-cyan-500/15 text-cyan-300 rounded-full">{item.category}</Badge>
                     </div>
-                    {item.is_featured && (
-                      <div className="absolute top-4 right-4">
-                        <Badge className="bg-yellow-500 text-yellow-900">
-                          Featured
-                        </Badge>
-                      </div>
-                    )}
+                  )}
+                  {item.is_featured && (
+                    <div className="absolute top-4 right-4">
+                      <Badge className="bg-yellow-500 text-yellow-900 rounded-full">Featured</Badge>
+                    </div>
+                  )}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-slate-950/40 flex items-center justify-center rounded-2xl">
+                    <span className="text-white bg-slate-950/70 rounded-full p-3">
+                      <ArrowUpRight className="w-6 h-6" />
+                    </span>
                   </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-cyan-400 transition-colors">
-                      {item.title}
-                    </h3>
-                    <p className="text-gray-400 mb-4 line-clamp-2">{item.description}</p>
-                    <div className="flex items-center justify-between text-sm text-gray-500">
-                      {item.client && <span>{item.client}</span>}
-                      {item.project_date && <span>{new Date(item.project_date).getFullYear()}</span>}
-                    </div>
+                </div>
+                <div className="p-7">
+                  <h3 className="text-xl font-semibold text-white group-hover:text-cyan-300 transition-colors">
+                    {item.title}
+                  </h3>
+                  <p className="mt-2 text-slate-400 leading-relaxed line-clamp-2">{item.description}</p>
+                  <div className="mt-5 flex items-center justify-between text-sm text-slate-500">
+                    {item.client && <span>{item.client}</span>}
+                    {item.project_date && <span>{new Date(item.project_date).getFullYear()}</span>}
                   </div>
                 </div>
               </Link>
             ))}
           </div>
         ) : (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">📁</div>
+          <div className="text-center py-14">
+            <div className="text-5xl mb-4">📁</div>
             <h3 className="text-xl font-semibold text-white mb-2">No projects yet</h3>
-            <p className="text-gray-400">
-              Featured projects will appear here once added.
-            </p>
+            <p className="text-slate-400">Featured projects will appear here once added.</p>
           </div>
         )}
       </div>
